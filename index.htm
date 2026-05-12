@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fashion Empire</title>
+
+<link rel="stylesheet" href="style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+
+<body>
+
+<header>
+
+<div class="navbar">
+
+<div class="logo">
+FASHION EMPIRE
+</div>
+
+<div class="search-box">
+
+<input 
+type="text"
+id="searchInput"
+placeholder="Search products..."
+onkeyup="searchProducts()"
+>
+
+</div>
+
+<div class="nav-icons">
+
+<i class="fa-solid fa-heart"></i>
+
+<i class="fa-solid fa-cart-shopping"
+onclick="openCart()"></i>
+
+<a href="login.html">
+<i class="fa-solid fa-user"></i>
+</a>
+
+</div>
+
+</div>
+
+</header>
+
+<section class="hero">
+
+<h1>Luxury Fashion Collection</h1>
+
+<p>
+Best Fashion Store For Clothes & Accessories
+</p>
+
+<button>
+Shop Now
+</button>
+
+</section>
+
+<section class="categories">
+
+<h2 class="section-title">
+Categories
+</h2>
+
+<div class="category-list">
+
+<div class="category"
+onclick="filterCategory('all')">
+
+<div class="circle">All</div>
+<p>All</p>
+
+</div>
+
+<div class="category"
+onclick="filterCategory('menswear')">
+
+<div class="circle">Menswear</div>
+<p>Menswear</p>
+
+</div>
+
+<div class="category"
+onclick="filterCategory('womenwear')">
+
+<div class="circle">Womenwear</div>
+<p>Womenwear</p>
+
+</div>
+
+<div class="category"
+onclick="filterCategory('shoes')">
+
+<div class="circle">Shoes</div>
+<p>Shoes</p>
+
+</div>
+
+<div class="category"
+onclick="filterCategory('bags')">
+
+<div class="circle">Bags</div>
+<p>Bags</p>
+
+</div>
+
+<div class="category"
+onclick="filterCategory('watches')">
+
+<div class="circle">Watches</div>
+<p>Watches</p>
+
+</div>
+
+</div>
+
+</section>
+
+<section class="products">
+
+<!-- PRODUCT 1 -->
+
+<div class="card"
+data-category="menswear">
+
+<div class="image">
+
+<img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab">
+
+</div>
+
+<div class="info">
+
+<h3>Oversized T-Shirt</h3>
+
+<div class="price">
+
+<span class="new">
+₹399
+</span>
+
+<span class="old">
+₹699
+</span>
+
+</div>
+
+<div class="rating">
+⭐ 4.8
+</div>
+
+<div class="card-buttons">
+
+<button class="cart-btn"
+onclick="addToCart('Oversized T-Shirt',399)">
+Add To Cart
+</button>
+
+<button class="view-btn"
+onclick="viewProduct()">
+View
+</button>
+
+</div>
+
+<button class="whatsapp-btn"
+onclick="orderWhatsApp('Oversized T-Shirt')">
+Order On WhatsApp
+</button>
+
+</div>
+
+</div>
+
+<!-- PRODUCT 2 -->
+
+<div class="card"
+data-category="womenwear">
+
+<div class="image">
+
+<img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c">
+
+</div>
+
+<div class="info">
+
+<h3>Women Kurti</h3>
+
+<div class="price">
+
+<span class="new">
+₹599
+</span>
+
+<span class="old">
+₹999
+</span>
+
+</div>
+
+<div class="rating">
+⭐ 4.7
+</div>
+
+<div class="card-buttons">
+
+<button class="cart-btn"
+onclick="addToCart('Women Kurti',599)">
+Add To Cart
+</button>
+
+<button class="view-btn"
+onclick="viewProduct()">
+View
+</button>
+
+</div>
+
+<button class="whatsapp-btn"
+onclick="orderWhatsApp('Women Kurti')">
+Order On WhatsApp
+</button>
+
+</div>
+
+</div>
+
+<!-- PRODUCT 3 -->
+
+<div class="card"
+data-category="shoes">
+
+<div class="image">
+
+<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff">
+
+</div>
+
+<div class="info">
+
+<h3>Premium Shoes</h3>
+
+<div class="price">
+
+<span class="new">
+₹799
+</span>
+
+<span class="old">
+₹1499
+</span>
+
+</div>
+
+<div class="rating">
+⭐ 4.9
+</div>
+
+<div class="card-buttons">
+
+<button class="cart-btn"
+onclick="addToCart('Premium Shoes',799)">
+Add To Cart
+</button>
+
+<button class="view-btn"
+onclick="viewProduct()">
+View
+</button>
+
+</div>
+
+<button class="whatsapp-btn"
+onclick="orderWhatsApp('Premium Shoes')">
+Order On WhatsApp
+</button>
+
+</div>
+
+</div>
+
+<!-- PRODUCT 4 -->
+
+<div class="card"
+data-category="bags">
+
+<div class="image">
+
+<img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa">
+
+</div>
+
+<div class="info">
+
+<h3>Luxury Bag</h3>
+
+<div class="price">
+
+<span class="new">
+₹999
+</span>
+
+<span class="old">
+₹1999
+</span>
+
+</div>
+
+<div class="rating">
+⭐ 4.8
+</div>
+
+<div class="card-buttons">
+
+<button class="cart-btn"
+onclick="addToCart('Luxury Bag',999)">
+Add To Cart
+</button>
+
+<button class="view-btn"
+onclick="viewProduct()">
+View
+</button>
+
+</div>
+
+<button class="whatsapp-btn"
+onclick="orderWhatsApp('Luxury Bag')">
+Order On WhatsApp
+</button>
+
+</div>
+
+</div>
+
+<!-- PRODUCT 5 -->
+
+<div class="card"
+data-category="watches">
+
+<div class="image">
+
+<img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49">
+
+</div>
+
+<div class="info">
+
+<h3>Smart Watch</h3>
+
+<div class="price">
+
+<span class="new">
+₹1299
+</span>
+
+<span class="old">
+₹2499
+</span>
+
+</div>
+
+<div class="rating">
+⭐ 4.9
+</div>
+
+<div class="card-buttons">
+
+<button class="cart-btn"
+onclick="addToCart('Smart Watch',1299)">
+Add To Cart
+</button>
+
+<button class="view-btn"
+onclick="viewProduct()">
+View
+</button>
+
+</div>
+
+<button class="whatsapp-btn"
+onclick="orderWhatsApp('Smart Watch')">
+Order On WhatsApp
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- CART -->
+
+<div class="cart-popup"
+id="cartPopup">
+
+<h2>
+Shopping Cart
+</h2>
+
+<div id="cart-items">
+</div>
+
+<button onclick="closeCart()"
+class="close-cart">
+Close
+</button>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
