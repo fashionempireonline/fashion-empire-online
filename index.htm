@@ -149,344 +149,10 @@ onclick="filterCategory('watches')">
 
 </section>
 
-<!-- PRODUCTS -->
+<!-- PRODUCTS AUTO LOAD -->
 
-<section class="products">
-
-<!-- PRODUCT 1 -->
-
-<div class="card"
-data-category="menswear">
-
-<div class="image">
-
-<img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab">
-
-</div>
-
-<div class="info">
-
-<h3>
-Oversized T-Shirt
-</h3>
-
-<div class="price">
-
-<span class="new">
-₹399
-</span>
-
-<span class="old">
-₹699
-</span>
-
-</div>
-
-<div class="rating">
-⭐ 4.8
-</div>
-
-<div class="card-buttons">
-
-<button class="cart-btn"
-onclick="addToCart('Oversized T-Shirt',399)">
-
-Add To Cart
-
-</button>
-
-<button class="view-btn"
-
-onclick="viewProduct(
-'Oversized T-Shirt',
-399,
-'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab'
-)">
-
-View
-
-</button>
-
-</div>
-
-<button class="whatsapp-btn"
-onclick="orderWhatsApp('Oversized T-Shirt')">
-
-Order On WhatsApp
-
-</button>
-
-</div>
-
-</div>
-
-<!-- PRODUCT 2 -->
-
-<div class="card"
-data-category="womenwear">
-
-<div class="image">
-
-<img src="https://images.unsplash.com/photo-1496747611176-843222e1e57c">
-
-</div>
-
-<div class="info">
-
-<h3>
-Women Kurti
-</h3>
-
-<div class="price">
-
-<span class="new">
-₹599
-</span>
-
-<span class="old">
-₹999
-</span>
-
-</div>
-
-<div class="rating">
-⭐ 4.7
-</div>
-
-<div class="card-buttons">
-
-<button class="cart-btn"
-onclick="addToCart('Women Kurti',599)">
-
-Add To Cart
-
-</button>
-
-<button class="view-btn"
-
-onclick="viewProduct(
-'Women Kurti',
-599,
-'https://images.unsplash.com/photo-1496747611176-843222e1e57c'
-)">
-
-View
-
-</button>
-
-</div>
-
-<button class="whatsapp-btn"
-onclick="orderWhatsApp('Women Kurti')">
-
-Order On WhatsApp
-
-</button>
-
-</div>
-
-</div>
-
-<!-- PRODUCT 3 -->
-
-<div class="card"
-data-category="shoes">
-
-<div class="image">
-
-<img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff">
-
-</div>
-
-<div class="info">
-
-<h3>
-Premium Shoes
-</h3>
-
-<div class="price">
-
-<span class="new">
-₹799
-</span>
-
-<span class="old">
-₹1499
-</span>
-
-</div>
-
-<div class="rating">
-⭐ 4.9
-</div>
-
-<div class="card-buttons">
-
-<button class="cart-btn"
-onclick="addToCart('Premium Shoes',799)">
-
-Add To Cart
-
-</button>
-
-<button class="view-btn"
-
-onclick="viewProduct(
-'Premium Shoes',
-799,
-'https://images.unsplash.com/photo-1542291026-7eec264c27ff'
-)">
-
-View
-
-</button>
-
-</div>
-
-<button class="whatsapp-btn"
-onclick="orderWhatsApp('Premium Shoes')">
-
-Order On WhatsApp
-
-</button>
-
-</div>
-
-</div>
-
-<!-- PRODUCT 4 -->
-
-<div class="card"
-data-category="bags">
-
-<div class="image">
-
-<img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa">
-
-</div>
-
-<div class="info">
-
-<h3>
-Luxury Bag
-</h3>
-
-<div class="price">
-
-<span class="new">
-₹999
-</span>
-
-<span class="old">
-₹1999
-</span>
-
-</div>
-
-<div class="rating">
-⭐ 4.8
-</div>
-
-<div class="card-buttons">
-
-<button class="cart-btn"
-onclick="addToCart('Luxury Bag',999)">
-
-Add To Cart
-
-</button>
-
-<button class="view-btn"
-
-onclick="viewProduct(
-'Luxury Bag',
-999,
-'https://images.unsplash.com/photo-1548036328-c9fa89d128fa'
-)">
-
-View
-
-</button>
-
-</div>
-
-<button class="whatsapp-btn"
-onclick="orderWhatsApp('Luxury Bag')">
-
-Order On WhatsApp
-
-</button>
-
-</div>
-
-</div>
-
-<!-- PRODUCT 5 -->
-
-<div class="card"
-data-category="watches">
-
-<div class="image">
-
-<img src="https://images.unsplash.com/photo-1523170335258-f5ed11844a49">
-
-</div>
-
-<div class="info">
-
-<h3>
-Smart Watch
-</h3>
-
-<div class="price">
-
-<span class="new">
-₹1299
-</span>
-
-<span class="old">
-₹2499
-</span>
-
-</div>
-
-<div class="rating">
-⭐ 4.9
-</div>
-
-<div class="card-buttons">
-
-<button class="cart-btn"
-onclick="addToCart('Smart Watch',1299)">
-
-Add To Cart
-
-</button>
-
-<button class="view-btn"
-
-onclick="viewProduct(
-'Smart Watch',
-1299,
-'https://images.unsplash.com/photo-1523170335258-f5ed11844a49'
-)">
-
-View
-
-</button>
-
-</div>
-
-<button class="whatsapp-btn"
-onclick="orderWhatsApp('Smart Watch')">
-
-Order On WhatsApp
-
-</button>
-
-</div>
-
-</div>
+<section class="products"
+id="products">
 
 </section>
 
@@ -512,6 +178,62 @@ Close
 </button>
 
 </div>
+
+<!-- FIREBASE -->
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyBw6dKBEDGfuh-he23WHJGG-L6mRDH_lFo",
+
+authDomain: "fashion-empire-online.firebaseapp.com",
+
+projectId: "fashion-empire-online",
+
+storageBucket: "fashion-empire-online.firebasestorage.app",
+
+messagingSenderId: "270445447440",
+
+appId: "1:270445447440:web:17b31b34a0bbecbe87bd95",
+
+measurementId: "G-PD7G28K99Z"
+
+};
+
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getFirestore(app);
+
+
+/* GLOBAL */
+
+window.db = db;
+
+window.collection = collection;
+
+window.addDoc = addDoc;
+
+window.getDocs = getDocs;
+
+</script>
+
+<!-- SCRIPT -->
 
 <script src="script.js"></script>
 

@@ -1,6 +1,106 @@
 let cart = [];
 
-/* SEARCH */
+/* =========================
+FIREBASE PRODUCTS LOAD
+========================= */
+
+async function loadFirebaseProducts(){
+
+const querySnapshot =
+await getDocs(
+collection(db,"products")
+);
+
+let container =
+document.getElementById("products");
+
+container.innerHTML = "";
+
+querySnapshot.forEach((doc)=>{
+
+let product = doc.data();
+
+container.innerHTML += `
+
+<div class="card"
+data-category="${product.category}">
+
+<div class="image">
+
+<img src="${product.image}">
+
+</div>
+
+<div class="info">
+
+<h3>${product.title}</h3>
+
+<p>${product.description}</p>
+
+<div class="price">
+
+<span class="new">
+₹${product.price}
+</span>
+
+<span class="old">
+₹${product.oldPrice || ""}
+</span>
+
+</div>
+
+<div class="rating">
+⭐ 4.8
+</div>
+
+<div class="card-buttons">
+
+<button class="cart-btn"
+onclick="addToCart('${product.title}',${product.price})">
+
+Add To Cart
+
+</button>
+
+<button class="view-btn"
+
+onclick="viewProduct(
+'${product.title}',
+${product.price},
+'${product.image}',
+'${product.description}'
+)">
+
+View
+
+</button>
+
+</div>
+
+<button class="whatsapp-btn"
+
+onclick="orderWhatsApp('${product.title}')">
+
+Order On WhatsApp
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+loadFirebaseProducts();
+
+
+/* =========================
+SEARCH
+========================= */
 
 function searchProducts(){
 
@@ -32,7 +132,9 @@ card.style.display = "none";
 }
 
 
-/* CATEGORY FILTER */
+/* =========================
+CATEGORY FILTER
+========================= */
 
 function filterCategory(category){
 
@@ -65,7 +167,9 @@ card.style.display = "none";
 }
 
 
-/* ADD TO CART */
+/* =========================
+ADD TO CART
+========================= */
 
 function addToCart(name,price){
 
@@ -78,7 +182,9 @@ openCart();
 }
 
 
-/* RENDER CART */
+/* =========================
+RENDER CART
+========================= */
 
 function renderCart(){
 
@@ -126,7 +232,9 @@ Remove
 }
 
 
-/* REMOVE ITEM */
+/* =========================
+REMOVE ITEM
+========================= */
 
 function removeItem(index){
 
@@ -137,7 +245,9 @@ renderCart();
 }
 
 
-/* OPEN CART */
+/* =========================
+OPEN CART
+========================= */
 
 function openCart(){
 
@@ -148,7 +258,9 @@ document
 }
 
 
-/* CLOSE CART */
+/* =========================
+CLOSE CART
+========================= */
 
 function closeCart(){
 
@@ -159,7 +271,9 @@ document
 }
 
 
-/* WHATSAPP */
+/* =========================
+WHATSAPP ORDER
+========================= */
 
 function orderWhatsApp(product){
 
@@ -176,9 +290,16 @@ window.open(
 }
 
 
-/* PRODUCT VIEW POPUP */
+/* =========================
+PRODUCT VIEW POPUP
+========================= */
 
-function viewProduct(product,price,image){
+function viewProduct(
+product,
+price,
+image,
+description
+){
 
 let modal = document.createElement("div");
 
@@ -207,7 +328,7 @@ onclick="closeModal()">
 
 <p>
 
-Premium fashion product with best quality.
+${description}
 
 </p>
 
@@ -226,7 +347,9 @@ document.body.appendChild(modal);
 }
 
 
-/* CLOSE MODAL */
+/* =========================
+CLOSE MODAL
+========================= */
 
 function closeModal(){
 
