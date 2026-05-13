@@ -1,19 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Fashion Empire</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet"
+href="style.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+rel="stylesheet">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </head>
 
 <body>
+
+<!-- HEADER -->
 
 <header>
 
@@ -25,7 +35,7 @@ FASHION EMPIRE
 
 <div class="search-box">
 
-<input 
+<input
 type="text"
 id="searchInput"
 placeholder="Search products..."
@@ -42,7 +52,9 @@ onkeyup="searchProducts()"
 onclick="openCart()"></i>
 
 <a href="login.html">
+
 <i class="fa-solid fa-user"></i>
+
 </a>
 
 </div>
@@ -51,9 +63,13 @@ onclick="openCart()"></i>
 
 </header>
 
+<!-- HERO -->
+
 <section class="hero">
 
-<h1>Luxury Fashion Collection</h1>
+<h1>
+Luxury Fashion Collection
+</h1>
 
 <p>
 Best Fashion Store For Clothes & Accessories
@@ -64,6 +80,8 @@ Shop Now
 </button>
 
 </section>
+
+<!-- CATEGORY -->
 
 <section class="categories">
 
@@ -77,6 +95,7 @@ Categories
 onclick="filterCategory('all')">
 
 <div class="circle">All</div>
+
 <p>All</p>
 
 </div>
@@ -85,6 +104,7 @@ onclick="filterCategory('all')">
 onclick="filterCategory('menswear')">
 
 <div class="circle">Menswear</div>
+
 <p>Menswear</p>
 
 </div>
@@ -93,6 +113,7 @@ onclick="filterCategory('menswear')">
 onclick="filterCategory('womenwear')">
 
 <div class="circle">Womenwear</div>
+
 <p>Womenwear</p>
 
 </div>
@@ -101,6 +122,7 @@ onclick="filterCategory('womenwear')">
 onclick="filterCategory('shoes')">
 
 <div class="circle">Shoes</div>
+
 <p>Shoes</p>
 
 </div>
@@ -109,6 +131,7 @@ onclick="filterCategory('shoes')">
 onclick="filterCategory('bags')">
 
 <div class="circle">Bags</div>
+
 <p>Bags</p>
 
 </div>
@@ -117,6 +140,7 @@ onclick="filterCategory('bags')">
 onclick="filterCategory('watches')">
 
 <div class="circle">Watches</div>
+
 <p>Watches</p>
 
 </div>
@@ -124,6 +148,8 @@ onclick="filterCategory('watches')">
 </div>
 
 </section>
+
+<!-- PRODUCTS -->
 
 <section class="products">
 
@@ -140,7 +166,9 @@ data-category="menswear">
 
 <div class="info">
 
-<h3>Oversized T-Shirt</h3>
+<h3>
+Oversized T-Shirt
+</h3>
 
 <div class="price">
 
@@ -162,19 +190,30 @@ data-category="menswear">
 
 <button class="cart-btn"
 onclick="addToCart('Oversized T-Shirt',399)">
+
 Add To Cart
+
 </button>
 
 <button class="view-btn"
-onclick="viewProduct()">
+
+onclick="viewProduct(
+'Oversized T-Shirt',
+399,
+'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab'
+)">
+
 View
+
 </button>
 
 </div>
 
 <button class="whatsapp-btn"
 onclick="orderWhatsApp('Oversized T-Shirt')">
+
 Order On WhatsApp
+
 </button>
 
 </div>
@@ -194,7 +233,9 @@ data-category="womenwear">
 
 <div class="info">
 
-<h3>Women Kurti</h3>
+<h3>
+Women Kurti
+</h3>
 
 <div class="price">
 
@@ -216,19 +257,30 @@ data-category="womenwear">
 
 <button class="cart-btn"
 onclick="addToCart('Women Kurti',599)">
+
 Add To Cart
+
 </button>
 
 <button class="view-btn"
-onclick="viewProduct()">
+
+onclick="viewProduct(
+'Women Kurti',
+599,
+'https://images.unsplash.com/photo-1496747611176-843222e1e57c'
+)">
+
 View
+
 </button>
 
 </div>
 
 <button class="whatsapp-btn"
 onclick="orderWhatsApp('Women Kurti')">
+
 Order On WhatsApp
+
 </button>
 
 </div>
@@ -248,7 +300,9 @@ data-category="shoes">
 
 <div class="info">
 
-<h3>Premium Shoes</h3>
+<h3>
+Premium Shoes
+</h3>
 
 <div class="price">
 
@@ -270,19 +324,30 @@ data-category="shoes">
 
 <button class="cart-btn"
 onclick="addToCart('Premium Shoes',799)">
+
 Add To Cart
+
 </button>
 
 <button class="view-btn"
-onclick="viewProduct()">
+
+onclick="viewProduct(
+'Premium Shoes',
+799,
+'https://images.unsplash.com/photo-1542291026-7eec264c27ff'
+)">
+
 View
+
 </button>
 
 </div>
 
 <button class="whatsapp-btn"
 onclick="orderWhatsApp('Premium Shoes')">
+
 Order On WhatsApp
+
 </button>
 
 </div>
@@ -302,7 +367,9 @@ data-category="bags">
 
 <div class="info">
 
-<h3>Luxury Bag</h3>
+<h3>
+Luxury Bag
+</h3>
 
 <div class="price">
 
@@ -324,19 +391,30 @@ data-category="bags">
 
 <button class="cart-btn"
 onclick="addToCart('Luxury Bag',999)">
+
 Add To Cart
+
 </button>
 
 <button class="view-btn"
-onclick="viewProduct()">
+
+onclick="viewProduct(
+'Luxury Bag',
+999,
+'https://images.unsplash.com/photo-1548036328-c9fa89d128fa'
+)">
+
 View
+
 </button>
 
 </div>
 
 <button class="whatsapp-btn"
 onclick="orderWhatsApp('Luxury Bag')">
+
 Order On WhatsApp
+
 </button>
 
 </div>
@@ -356,7 +434,9 @@ data-category="watches">
 
 <div class="info">
 
-<h3>Smart Watch</h3>
+<h3>
+Smart Watch
+</h3>
 
 <div class="price">
 
@@ -378,19 +458,30 @@ data-category="watches">
 
 <button class="cart-btn"
 onclick="addToCart('Smart Watch',1299)">
+
 Add To Cart
+
 </button>
 
 <button class="view-btn"
-onclick="viewProduct()">
+
+onclick="viewProduct(
+'Smart Watch',
+1299,
+'https://images.unsplash.com/photo-1523170335258-f5ed11844a49'
+)">
+
 View
+
 </button>
 
 </div>
 
 <button class="whatsapp-btn"
 onclick="orderWhatsApp('Smart Watch')">
+
 Order On WhatsApp
+
 </button>
 
 </div>
@@ -409,11 +500,15 @@ Shopping Cart
 </h2>
 
 <div id="cart-items">
+
 </div>
 
-<button onclick="closeCart()"
+<button
+onclick="closeCart()"
 class="close-cart">
+
 Close
+
 </button>
 
 </div>
