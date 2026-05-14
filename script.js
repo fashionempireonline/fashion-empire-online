@@ -27,8 +27,8 @@ data-category="${product.category}">
 
 <div class="image">
 
-<img src="${image}">
-<img src="${image2}">
+<img src="${product.image1}">
+
 </div>
 
 <div class="info">
@@ -44,7 +44,7 @@ data-category="${product.category}">
 </span>
 
 <span class="old">
-₹${product.oldPrice || ""}
+₹${product.oldprice || ""}
 </span>
 
 </div>
@@ -67,7 +67,11 @@ Add To Cart
 onclick="viewProduct(
 '${product.title}',
 ${product.price},
-'${product.image}',
+'${product.image1}',
+'${product.image2}',
+'${product.image3}',
+'${product.image4}',
+'${product.image5}',
 '${product.description}'
 )">
 
@@ -297,7 +301,11 @@ PRODUCT VIEW POPUP
 function viewProduct(
 product,
 price,
-image,
+image1,
+image2,
+image3,
+image4,
+image5,
 description
 ){
 
@@ -306,6 +314,8 @@ let modal = document.createElement("div");
 modal.classList.add("product-modal");
 
 modal.innerHTML = `
+
+<div class="product-modal-overlay">
 
 <div class="modal-content">
 
@@ -316,7 +326,22 @@ onclick="closeModal()">
 
 </span>
 
-<img src="${image}">
+<div class="gallery">
+
+<img src="${image1}"
+class="main-popup-image">
+
+<div class="gallery-row">
+
+<img src="${image1}">
+<img src="${image2}">
+<img src="${image3}">
+<img src="${image4}">
+<img src="${image5}">
+
+</div>
+
+</div>
 
 <h2>${product}</h2>
 
@@ -326,17 +351,20 @@ onclick="closeModal()">
 
 </p>
 
-<p>
+<p class="modal-description">
 
 ${description}
 
 </p>
 
-<button onclick="addToCart('${product}',${price})">
+<button class="modal-cart-btn"
+onclick="addToCart('${product}',${price})">
 
 Add To Cart
 
 </button>
+
+</div>
 
 </div>
 
