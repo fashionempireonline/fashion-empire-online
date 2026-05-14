@@ -1,10 +1,58 @@
+import {
+initializeApp
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+getDocs
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+
+/* =========================
+FIREBASE CONFIG
+========================= */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyBw6dKBEDGfuh-he23WHJGG-L6mRDH_lFo",
+
+authDomain: "fashion-empire-online.firebaseapp.com",
+
+projectId: "fashion-empire-online",
+
+storageBucket: "fashion-empire-online.firebasestorage.app",
+
+messagingSenderId: "270445447440",
+
+appId: "1:270445447440:web:17b31b34a0bbecbe87bd95"
+
+};
+
+
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getFirestore(app);
+
+
+/* =========================
+GLOBAL CART
+========================= */
+
 let cart = [];
+
 
 /* =========================
 FIREBASE PRODUCTS LOAD
 ========================= */
 
 async function loadFirebaseProducts(){
+
+try{
 
 const querySnapshot =
 await getDocs(
@@ -97,6 +145,12 @@ Order On WhatsApp
 
 });
 
+}catch(error){
+
+console.log(error);
+
+}
+
 }
 
 loadFirebaseProducts();
@@ -106,7 +160,7 @@ loadFirebaseProducts();
 SEARCH
 ========================= */
 
-function searchProducts(){
+window.searchProducts = function(){
 
 let input =
 document.getElementById("searchInput")
@@ -140,7 +194,7 @@ card.style.display = "none";
 CATEGORY FILTER
 ========================= */
 
-function filterCategory(category){
+window.filterCategory = function(category){
 
 document.getElementById("searchInput").value = "";
 
@@ -175,7 +229,7 @@ card.style.display = "none";
 ADD TO CART
 ========================= */
 
-function addToCart(name,price){
+window.addToCart = function(name,price){
 
 cart.push({name,price});
 
@@ -240,7 +294,7 @@ Remove
 REMOVE ITEM
 ========================= */
 
-function removeItem(index){
+window.removeItem = function(index){
 
 cart.splice(index,1);
 
@@ -253,7 +307,7 @@ renderCart();
 OPEN CART
 ========================= */
 
-function openCart(){
+window.openCart = function(){
 
 document
 .getElementById("cartPopup")
@@ -266,7 +320,7 @@ document
 CLOSE CART
 ========================= */
 
-function closeCart(){
+window.closeCart = function(){
 
 document
 .getElementById("cartPopup")
@@ -279,7 +333,7 @@ document
 WHATSAPP ORDER
 ========================= */
 
-function orderWhatsApp(product){
+window.orderWhatsApp = function(product){
 
 let phone = "919174709695";
 
@@ -298,7 +352,7 @@ window.open(
 PRODUCT VIEW POPUP
 ========================= */
 
-function viewProduct(
+window.viewProduct = function(
 product,
 price,
 image1,
@@ -379,7 +433,7 @@ document.body.appendChild(modal);
 CLOSE MODAL
 ========================= */
 
-function closeModal(){
+window.closeModal = function(){
 
 document
 .querySelector(".product-modal")
