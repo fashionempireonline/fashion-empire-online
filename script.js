@@ -82,8 +82,7 @@ data-category="${product.category}">
 <div class="info">
 
 <h3>${product.title}</h3>
-
-<p>${product.description}</p>
+<p>${product.discount}</p>
 
 <div class="price">
 
@@ -131,7 +130,7 @@ View
 
 <button class="whatsapp-btn"
 
-onclick="orderWhatsApp('${product.title}')">
+onclick="orderWhatsApp('<p>${product.title}',${product.image1}</p>')">
 
 Order On WhatsApp
 
