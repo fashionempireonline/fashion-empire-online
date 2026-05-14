@@ -27,8 +27,8 @@ data-category="${product.category}">
 
 <div class="image">
 
-<img src="${product.image}">
-
+<img src="${image}">
+<img src="${image2}">
 </div>
 
 <div class="info">
