@@ -1,155 +1,86 @@
-import {
-initializeApp
-}
-from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-
-import {
-getFirestore,
-collection,
-getDocs
-}
-from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-
-
-/* =========================
-FIREBASE CONFIG
-========================= */
-
-const firebaseConfig = {
-
-apiKey: "AIzaSyBw6dKBEDGfuh-he23WHJGG-L6mRDH_lFo",
-
-authDomain: "fashion-empire-online.firebaseapp.com",
-
-projectId: "fashion-empire-online",
-
-storageBucket: "fashion-empire-online.firebasestorage.app",
-
-messagingSenderId: "270445447440",
-
-appId: "1:270445447440:web:17b31b34a0bbecbe87bd95"
-
-};
-
-
-const app =
-initializeApp(firebaseConfig);
-
-const db =
-getFirestore(app);
-
-
-/* =========================
-GLOBAL CART
-========================= */
+let db = window.db;
+let collection = window.collection;
+let getDocs = window.getDocs;
 
 let cart = [];
-
 
 /* =========================
 FIREBASE PRODUCTS LOAD
 ========================= */
 
-async function loadFirebaseProducts(){
+async function loadFirebaseProducts() {
+    try {
+        const querySnapshot = await getDocs(
+            collection(db, "products")
+        );
 
-try{
+        let container = document.getElementById("products");
+        container.innerHTML = "";
 
-const querySnapshot =
-await getDocs(
-collection(db,"products")
-);
+        querySnapshot.forEach((doc) => {
+            let product = doc.data();
 
-let container =
-document.getElementById("products");
+            container.innerHTML += `
+                <div class="card" data-category="${product.category || 'all'}">
 
-container.innerHTML = "";
+                    <div class="image">
+                        <img src="${product.image1 || ''}" alt="${product.title || ''}">
+                    </div>
 
-querySnapshot.forEach((doc)=>{
+                    <div class="info">
+                        <h3>${product.title || 'Product'}</h3>
+                        <p>${product.discount || ''}</p>
 
-let product = doc.data();
+                        <div class="price">
+                            <span class="new">
+                                ₹${product.price || 0}
+                            </span>
 
-container.innerHTML += `
+                            <span class="old">
+                                ₹${product.oldprice || ""}
+                            </span>
+                        </div>
 
-<div class="card"
-data-category="${product.category}">
+                        <div class="rating">
+                            ⭐ 4.8
+                        </div>
 
-<div class="image">
+                        <div class="card-buttons">
 
-<img src="${product.image1}">
+                            <button class="cart-btn"
+                                onclick="addToCart('${product.title}', ${product.price || 0})">
+                                Add To Cart
+                            </button>
 
-</div>
+                            <button class="view-btn"
+                                onclick="viewProduct(
+                                    '${product.title || ''}',
+                                    ${product.price || 0},
+                                    '${product.image1 || ''}',
+                                    '${product.image2 || ''}',
+                                    '${product.image3 || ''}',
+                                    '${product.image4 || ''}',
+                                    '${product.image5 || ''}',
+                                    '${product.description || ''}'
+                                )">
+                                View
+                            </button>
 
-<div class="info">
+                        </div>
 
-<h3>${product.title}</h3>
-<p>${product.discount}</p>
+                        <button class="whatsapp-btn"
+                            onclick="orderWhatsApp('${product.title || ''}')">
+                            Order On WhatsApp
+                        </button>
 
-<div class="price">
+                    </div>
+                </div>
+            `;
+        });
 
-<span class="new">
-₹${product.price}
-</span>
-
-<span class="old">
-₹${product.oldprice || ""}
-</span>
-
-</div>
-
-<div class="rating">
-⭐ 4.8
-</div>
-
-<div class="card-buttons">
-
-<button class="cart-btn"
-onclick="addToCart('${product.title}',${product.price})">
-
-Add To Cart
-
-</button>
-
-<button class="view-btn"
-
-onclick="viewProduct(
-'${product.title}',
-${product.price},
-'${product.image1}',
-'${product.image2}',
-'${product.image3}',
-'${product.image4}',
-'${product.image5}',
-'${product.description}'
-)">
-
-View
-
-</button>
-
-</div>
-
-<button class="whatsapp-btn"
-
-onclick="orderWhatsApp('<p>${product.title}',${product.image1}</p>')">
-
-Order On WhatsApp
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-});
-
-}catch(error){
-
-console.log(error);
-
-}
-
+    } catch (error) {
+        console.log("Firebase Load Error:", error);
+    }
 }
 
 loadFirebaseProducts();
@@ -159,133 +90,95 @@ loadFirebaseProducts();
 SEARCH
 ========================= */
 
-window.searchProducts = function(){
+window.searchProducts = function () {
+    let input = document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
 
-let input =
-document.getElementById("searchInput")
-.value.toLowerCase();
+    let cards = document.querySelectorAll(".card");
 
-let cards =
-document.querySelectorAll(".card");
+    cards.forEach(card => {
+        let title = card
+            .querySelector("h3")
+            .innerText
+            .toLowerCase();
 
-cards.forEach(card=>{
-
-let title =
-card.querySelector("h3")
-.innerText.toLowerCase();
-
-if(title.includes(input)){
-
-card.style.display = "block";
-
-}else{
-
-card.style.display = "none";
-
-}
-
-});
-
-}
+        if (title.includes(input)) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+};
 
 
 /* =========================
 CATEGORY FILTER
 ========================= */
 
-window.filterCategory = function(category){
+window.filterCategory = function (category) {
+    document.getElementById("searchInput").value = "";
 
-document.getElementById("searchInput").value = "";
+    let cards = document.querySelectorAll(".card");
 
-let cards =
-document.querySelectorAll(".card");
+    cards.forEach(card => {
+        if (category === "all") {
+            card.style.display = "block";
+            return;
+        }
 
-cards.forEach(card=>{
-
-if(category === "all"){
-
-card.style.display = "block";
-return;
-
-}
-
-if(card.dataset.category === category){
-
-card.style.display = "block";
-
-}else{
-
-card.style.display = "none";
-
-}
-
-});
-
-}
+        if (card.dataset.category === category) {
+            card.style.display = "block";
+        } else {
+            card.style.display = "none";
+        }
+    });
+};
 
 
 /* =========================
 ADD TO CART
 ========================= */
 
-window.addToCart = function(name,price){
+window.addToCart = function (name, price) {
+    cart.push({ name, price });
 
-cart.push({name,price});
-
-renderCart();
-
-openCart();
-
-}
+    renderCart();
+    openCart();
+};
 
 
 /* =========================
 RENDER CART
 ========================= */
 
-function renderCart(){
+function renderCart() {
+    let cartItems = document.getElementById("cart-items");
+    cartItems.innerHTML = "";
 
-let cartItems =
-document.getElementById("cart-items");
+    if (cart.length === 0) {
+        cartItems.innerHTML = "<p>Your cart is empty</p>";
+        return;
+    }
 
-cartItems.innerHTML = "";
+    cart.forEach((item, index) => {
+        cartItems.innerHTML += `
+            <div class="cart-item">
 
-if(cart.length === 0){
+                <div>
+                    <h3>${item.name}</h3>
+                    <p>₹${item.price}</p>
+                </div>
 
-cartItems.innerHTML =
-"<p>Your cart is empty</p>";
+                <button class="remove-btn"
+                    onclick="removeItem(${index})">
+                    Remove
+                </button>
 
-return;
-
-}
-
-cart.forEach((item,index)=>{
-
-cartItems.innerHTML += `
-
-<div class="cart-item">
-
-<div>
-
-<h3>${item.name}</h3>
-
-<p>₹${item.price}</p>
-
-</div>
-
-<button class="remove-btn"
-onclick="removeItem(${index})">
-
-Remove
-
-</button>
-
-</div>
-
-`;
-
-});
-
+            </div>
+        `;
+    });
 }
 
 
@@ -293,149 +186,123 @@ Remove
 REMOVE ITEM
 ========================= */
 
-window.removeItem = function(index){
-
-cart.splice(index,1);
-
-renderCart();
-
-}
+window.removeItem = function (index) {
+    cart.splice(index, 1);
+    renderCart();
+};
 
 
 /* =========================
 OPEN CART
 ========================= */
 
-window.openCart = function(){
-
-document
-.getElementById("cartPopup")
-.classList.add("active");
-
-}
+window.openCart = function () {
+    document
+        .getElementById("cartPopup")
+        .classList.add("active");
+};
 
 
 /* =========================
 CLOSE CART
 ========================= */
 
-window.closeCart = function(){
-
-document
-.getElementById("cartPopup")
-.classList.remove("active");
-
-}
+window.closeCart = function () {
+    document
+        .getElementById("cartPopup")
+        .classList.remove("active");
+};
 
 
 /* =========================
 WHATSAPP ORDER
 ========================= */
 
-window.orderWhatsApp = function(product){
+window.orderWhatsApp = function (product) {
+    let phone = "919174709695";
 
-let phone = "919174709695";
+    let message = `Hello, I want to order ${product}`;
 
-let message =
-`Hello I want to order ${product}`;
-
-window.open(
-`https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
-"_blank"
-);
-
-}
+    window.open(
+        `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
+        "_blank"
+    );
+};
 
 
 /* =========================
 PRODUCT VIEW POPUP
 ========================= */
 
-window.viewProduct = function(
-product,
-price,
-image1,
-image2,
-image3,
-image4,
-image5,
-description
-){
+window.viewProduct = function (
+    product,
+    price,
+    image1,
+    image2,
+    image3,
+    image4,
+    image5,
+    description
+) {
+    let modal = document.createElement("div");
+    modal.classList.add("product-modal");
 
-let modal = document.createElement("div");
+    modal.innerHTML = `
+        <div class="product-modal-overlay">
 
-modal.classList.add("product-modal");
+            <div class="modal-content">
 
-modal.innerHTML = `
+                <span class="close-modal"
+                    onclick="closeModal()">
+                    &times;
+                </span>
 
-<div class="product-modal-overlay">
+                <div class="gallery">
 
-<div class="modal-content">
+                    <img src="${image1}" class="main-popup-image">
 
-<span class="close-modal"
-onclick="closeModal()">
+                    <div class="gallery-row">
+                        <img src="${image1}">
+                        <img src="${image2}">
+                        <img src="${image3}">
+                        <img src="${image4}">
+                        <img src="${image5}">
+                    </div>
 
-&times;
+                </div>
 
-</span>
+                <h2>${product}</h2>
 
-<div class="gallery">
+                <p class="modal-price">
+                    ₹${price}
+                </p>
 
-<img src="${image1}"
-class="main-popup-image">
+                <p class="modal-description">
+                    ${description}
+                </p>
 
-<div class="gallery-row">
+                <button class="modal-cart-btn"
+                    onclick="addToCart('${product}', ${price})">
+                    Add To Cart
+                </button>
 
-<img src="${image1}">
-<img src="${image2}">
-<img src="${image3}">
-<img src="${image4}">
-<img src="${image5}">
+            </div>
 
-</div>
+        </div>
+    `;
 
-</div>
-
-<h2>${product}</h2>
-
-<p class="modal-price">
-
-₹${price}
-
-</p>
-
-<p class="modal-description">
-
-${description}
-
-</p>
-
-<button class="modal-cart-btn"
-onclick="addToCart('${product}',${price})">
-
-Add To Cart
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-document.body.appendChild(modal);
-
-}
+    document.body.appendChild(modal);
+};
 
 
 /* =========================
 CLOSE MODAL
 ========================= */
 
-window.closeModal = function(){
+window.closeModal = function () {
+    let modal = document.querySelector(".product-modal");
 
-document
-.querySelector(".product-modal")
-.remove();
-
-}
+    if (modal) {
+        modal.remove();
+    }
+};
