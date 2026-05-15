@@ -1,147 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Empire</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
 
-<title>Fashion Empire</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="style.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
+    <!-- Optional favicon -->
+    <link rel="icon" href="images/favicon.ico">
 </head>
 
 <body>
 
-<!-- HEADER -->
+    <!-- HEADER -->
+    <header>
+        <div class="navbar">
 
-<header>
+            <div class="logo">
+                FASHION EMPIRE
+            </div>
 
-<div class="navbar">
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search products..."
+                    onkeyup="searchProducts()"
+                >
+            </div>
 
-<div class="logo">
-FASHION EMPIRE
-</div>
+            <div class="nav-icons">
+                <i class="fa-solid fa-heart"></i>
 
-<div class="search-box">
+                <i
+                    class="fa-solid fa-cart-shopping"
+                    onclick="openCart()"
+                ></i>
 
-<input
-type="text"
-id="searchInput"
-placeholder="Search products..."
-onkeyup="searchProducts()"
->
+                <a href="login.html">
+                    <i class="fa-solid fa-user"></i>
+                </a>
+            </div>
 
-</div>
+        </div>
+    </header>
 
-<div class="nav-icons">
 
-<i class="fa-solid fa-heart"></i>
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h1>Luxury Fashion Collection</h1>
 
-<i class="fa-solid fa-cart-shopping"
-onclick="openCart()"></i>
+        <p>
+            Best Fashion Store For Clothes & Accessories
+        </p>
 
-<a href="login.html">
-<i class="fa-solid fa-user"></i>
-</a>
+        <button onclick="filterCategory('all')">
+            Shop Now
+        </button>
+    </section>
 
-</div>
 
-</div>
+    <!-- CATEGORY SECTION -->
+    <section class="categories">
 
-</header>
+        <h2 class="section-title">
+            Categories
+        </h2>
 
-<!-- HERO -->
+        <div class="category-list">
 
-<section class="hero">
+            <div
+                class="category"
+                onclick="filterCategory('all')"
+            >
+                <div class="circle">All</div>
+                <p>All</p>
+            </div>
 
-<h1>
-Luxury Fashion Collection
-</h1>
+            <div
+                class="category"
+                onclick="filterCategory('menswear')"
+            >
+                <div class="circle">Menswear</div>
+                <p>Menswear</p>
+            </div>
 
-<p>
-Best Fashion Store For Clothes & Accessories
-</p>
+            <div
+                class="category"
+                onclick="filterCategory('womenwear')"
+            >
+                <div class="circle">Womenwear</div>
+                <p>Womenwear</p>
+            </div>
 
-<button>
-Shop Now
-</button>
+            <div
+                class="category"
+                onclick="filterCategory('shoes')"
+            >
+                <div class="circle">Shoes</div>
+                <p>Shoes</p>
+            </div>
 
-</section>
+            <div
+                class="category"
+                onclick="filterCategory('bags')"
+            >
+                <div class="circle">Bags</div>
+                <p>Bags</p>
+            </div>
 
-<!-- CATEGORY -->
+            <div
+                class="category"
+                onclick="filterCategory('watches')"
+            >
+                <div class="circle">Watches</div>
+                <p>Watches</p>
+            </div>
 
-<section class="categories">
+        </div>
+    </section>
 
-<h2 class="section-title">
-Categories
-</h2>
 
-<div class="category-list">
+    <!-- PRODUCTS SECTION -->
+    <section
+        class="products"
+        id="products"
+    >
+        <!-- Firebase se products auto load honge -->
+    </section>
 
-<div class="category" onclick="filterCategory('all')">
-<div class="circle">All</div>
-<p>All</p>
-</div>
 
-<div class="category" onclick="filterCategory('menswear')">
-<div class="circle">Menswear</div>
-<p>Menswear</p>
-</div>
+    <!-- CART POPUP -->
+    <div
+        class="cart-popup"
+        id="cartPopup"
+    >
+        <h2>Shopping Cart</h2>
 
-<div class="category" onclick="filterCategory('womenwear')">
-<div class="circle">Womenwear</div>
-<p>Womenwear</p>
-</div>
+        <div id="cart-items">
+            <p>Your cart is empty</p>
+        </div>
 
-<div class="category" onclick="filterCategory('shoes')">
-<div class="circle">Shoes</div>
-<p>Shoes</p>
-</div>
+        <button
+            onclick="closeCart()"
+            class="close-cart"
+        >
+            Close
+        </button>
+    </div>
 
-<div class="category" onclick="filterCategory('bags')">
-<div class="circle">Bags</div>
-<p>Bags</p>
-</div>
 
-<div class="category" onclick="filterCategory('watches')">
-<div class="circle">Watches</div>
-<p>Watches</p>
-</div>
+    <!-- FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
-</div>
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            addDoc
+        } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
-</section>
 
-<!-- PRODUCTS AUTO LOAD -->
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "fashion-empire-online.firebaseapp.com",
+            projectId: "fashion-empire-online",
+            storageBucket: "fashion-empire-online.firebasestorage.app",
+            messagingSenderId: "270445447440",
+            appId: "1:270445447440:web:17b31b34a0bbecbe87bd95",
+            measurementId: "G-PD7G28K99Z"
+        };
 
-<section class="products" id="products">
-</section>
 
-<!-- CART -->
+        /* Firebase initialize only ONCE */
 
-<div class="cart-popup" id="cartPopup">
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-<h2>
-Shopping Cart
-</h2>
 
-<div id="cart-items"></div>
+        /* Global access for script.js */
 
-<button onclick="closeCart()" class="close-cart">
-Close
-</button>
+        window.db = db;
+        window.collection = collection;
+        window.getDocs = getDocs;
+        window.addDoc = addDoc;
+    </script>
 
-</div>
 
-<!-- SCRIPT -->
-
-<script type="module" src="script.js"></script>
+    <!-- MAIN JS -->
+    <script src="script.js"></script>
 
 </body>
 </html>
