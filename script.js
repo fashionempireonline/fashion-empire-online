@@ -62,7 +62,7 @@ async function loadFirebaseProducts() {
             container.innerHTML += `
 
             <div class="card"
-            data-category="${product.category || 'all'}">
+            data-category="${(product.category || 'all').toLowerCase()}">
 
                 <div class="image">
 
@@ -95,24 +95,23 @@ async function loadFirebaseProducts() {
                     <div class="card-buttons">
 
                         <button class="cart-btn"
-                        onclick="addToCart('${product.title}', ${product.price || 0})">
+                        onclick="addToCart('${product.title || ''}', ${product.price || 0})">
 
                             Add To Cart
 
                         </button>
 
                         <button class="view-btn"
-
-                        onclick="viewProduct(
-                            '${product.title || ''}',
+                        onclick='viewProduct(
+                            ${JSON.stringify(product.title || "")},
                             ${product.price || 0},
-                            '${product.image1 || ''}',
-                            '${product.image2 || ''}',
-                            '${product.image3 || ''}',
-                            '${product.image4 || ''}',
-                            '${product.image5 || ''}',
-                            '${product.description || ''}'
-                        )">
+                            ${JSON.stringify(product.image1 || "")},
+                            ${JSON.stringify(product.image2 || "")},
+                            ${JSON.stringify(product.image3 || "")},
+                            ${JSON.stringify(product.image4 || "")},
+                            ${JSON.stringify(product.image5 || "")},
+                            ${JSON.stringify(product.description || "")}
+                        )'>
 
                             View
 
@@ -121,7 +120,6 @@ async function loadFirebaseProducts() {
                     </div>
 
                     <button class="whatsapp-btn"
-
                     onclick="orderWhatsApp('${product.title || ''}')">
 
                         Order On WhatsApp
@@ -153,7 +151,8 @@ window.searchProducts = function () {
 
     let input =
     document.getElementById("searchInput")
-    .value.toLowerCase();
+    .value
+    .toLowerCase();
 
     let cards =
     document.querySelectorAll(".card");
@@ -162,7 +161,8 @@ window.searchProducts = function () {
 
         let title =
         card.querySelector("h3")
-        .innerText.toLowerCase();
+        .innerText
+        .toLowerCase();
 
         if (title.includes(input)) {
 
@@ -182,6 +182,8 @@ window.searchProducts = function () {
 /* CATEGORY FILTER */
 
 window.filterCategory = function (category) {
+
+    category = category.toLowerCase();
 
     document.getElementById("searchInput").value = "";
 
@@ -361,11 +363,11 @@ window.viewProduct = function (
 
                 <div class="gallery-row">
 
-                    <img src="${image1}">
-                    <img src="${image2}">
-                    <img src="${image3}">
-                    <img src="${image4}">
-                    <img src="${image5}">
+                    ${image1 ? `<img src="${image1}" onclick="changeMainImage('${image1}')">` : ""}
+                    ${image2 ? `<img src="${image2}" onclick="changeMainImage('${image2}')">` : ""}
+                    ${image3 ? `<img src="${image3}" onclick="changeMainImage('${image3}')">` : ""}
+                    ${image4 ? `<img src="${image4}" onclick="changeMainImage('${image4}')">` : ""}
+                    ${image5 ? `<img src="${image5}" onclick="changeMainImage('${image5}')">` : ""}
 
                 </div>
 
@@ -397,6 +399,15 @@ window.viewProduct = function (
     document.body.appendChild(modal);
 
 };
+
+
+/* CHANGE IMAGE */
+
+window.changeMainImage = function(image){
+
+    document.querySelector(".main-popup-image").src = image;
+
+}
 
 
 /* CLOSE MODAL */
