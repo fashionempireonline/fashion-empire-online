@@ -1,12 +1,10 @@
-import {
-initializeApp
-}
+import { initializeApp }
 from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
 import {
-getFirestore,
-collection,
-getDocs
+    getFirestore,
+    collection,
+    getDocs
 }
 from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
@@ -17,26 +15,28 @@ FIREBASE CONFIG
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyBw6dKBEDGfuh-he23WHJGG-L6mRDH_lFo",
+    apiKey: "AIzaSyBw6dKBEDGfuh-he23WHJGG-L6mRDH_lFo",
 
-authDomain: "fashion-empire-online.firebaseapp.com",
+    authDomain: "fashion-empire-online.firebaseapp.com",
 
-projectId: "fashion-empire-online",
+    projectId: "fashion-empire-online",
 
-storageBucket: "fashion-empire-online.firebasestorage.app",
+    storageBucket: "fashion-empire-online.firebasestorage.app",
 
-messagingSenderId: "270445447440",
+    messagingSenderId: "270445447440",
 
-appId: "1:270445447440:web:17b31b34a0bbecbe87bd95"
+    appId: "1:270445447440:web:17b31b34a0bbecbe87bd95"
 
 };
 
 
-const app =
-initializeApp(firebaseConfig);
+/* =========================
+FIREBASE START
+========================= */
 
-const db =
-getFirestore(app);
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
 
 
 /* =========================
@@ -50,105 +50,105 @@ let cart = [];
 FIREBASE PRODUCTS LOAD
 ========================= */
 
-async function loadFirebaseProducts(){
+async function loadFirebaseProducts() {
 
-try{
+    try {
 
-const querySnapshot =
-await getDocs(
-collection(db,"products")
-);
+        const querySnapshot =
+        await getDocs(
+            collection(db, "products")
+        );
 
-let container =
-document.getElementById("products");
+        let container =
+        document.getElementById("products");
 
-container.innerHTML = "";
+        container.innerHTML = "";
 
-querySnapshot.forEach((doc)=>{
+        querySnapshot.forEach((doc) => {
 
-let product = doc.data();
+            let product = doc.data();
 
-container.innerHTML += `
+            container.innerHTML += `
 
-<div class="card"
-data-category="${product.category}">
+                <div class="card"
+                data-category="${product.category || 'all'}">
 
-<div class="image">
+                    <div class="image">
 
-<img src="${product.image1}">
+                        <img src="${product.image1 || ''}">
 
-</div>
+                    </div>
 
-<div class="info">
+                    <div class="info">
 
-<h3>${product.title}</h3>
-<p>${product.discount}</p>
+                        <h3>${product.title || 'Product'}</h3>
 
-<div class="price">
+                        <p>${product.discount || ''}</p>
 
-<span class="new">
-₹${product.price}
-</span>
+                        <div class="price">
 
-<span class="old">
-₹${product.oldprice || ""}
-</span>
+                            <span class="new">
+                                ₹${product.price || 0}
+                            </span>
 
-</div>
+                            <span class="old">
+                                ₹${product.oldprice || ""}
+                            </span>
 
-<div class="rating">
-⭐ 4.8
-</div>
+                        </div>
 
-<div class="card-buttons">
+                        <div class="rating">
+                            ⭐ 4.8
+                        </div>
 
-<button class="cart-btn"
-onclick="addToCart('${product.title}',${product.price})">
+                        <div class="card-buttons">
 
-Add To Cart
+                            <button class="cart-btn"
+                            onclick="addToCart('${product.title}', ${product.price || 0})">
 
-</button>
+                                Add To Cart
 
-<button class="view-btn"
+                            </button>
 
-onclick="viewProduct(
-'${product.title}',
-${product.price},
-'${product.image1}',
-'${product.image2}',
-'${product.image3}',
-'${product.image4}',
-'${product.image5}',
-'${product.description}'
-)">
+                            <button class="view-btn"
 
-View
+                            onclick="viewProduct(
+                                '${product.title || ''}',
+                                ${product.price || 0},
+                                '${product.image1 || ''}',
+                                '${product.image2 || ''}',
+                                '${product.image3 || ''}',
+                                '${product.image4 || ''}',
+                                '${product.image5 || ''}',
+                                '${product.description || ''}'
+                            )">
 
-</button>
+                                View
 
-</div>
+                            </button>
 
-<button class="whatsapp-btn"
+                        </div>
 
-onclick="orderWhatsApp('<p>${product.title}',${product.image1}</p>')">
+                        <button class="whatsapp-btn"
 
-Order On WhatsApp
+                        onclick="orderWhatsApp('${product.title || ''}')">
 
-</button>
+                            Order On WhatsApp
 
-</div>
+                        </button>
 
-</div>
+                    </div>
 
-`;
+                </div>
 
-});
+            `;
+        });
 
-}catch(error){
+    } catch (error) {
 
-console.log(error);
+        console.log("Firebase Error:", error);
 
-}
+    }
 
 }
 
@@ -159,132 +159,132 @@ loadFirebaseProducts();
 SEARCH
 ========================= */
 
-window.searchProducts = function(){
+window.searchProducts = function () {
 
-let input =
-document.getElementById("searchInput")
-.value.toLowerCase();
+    let input =
+    document.getElementById("searchInput")
+    .value.toLowerCase();
 
-let cards =
-document.querySelectorAll(".card");
+    let cards =
+    document.querySelectorAll(".card");
 
-cards.forEach(card=>{
+    cards.forEach(card => {
 
-let title =
-card.querySelector("h3")
-.innerText.toLowerCase();
+        let title =
+        card.querySelector("h3")
+        .innerText.toLowerCase();
 
-if(title.includes(input)){
+        if (title.includes(input)) {
 
-card.style.display = "block";
+            card.style.display = "block";
 
-}else{
+        } else {
 
-card.style.display = "none";
+            card.style.display = "none";
 
-}
+        }
 
-});
+    });
 
-}
+};
 
 
 /* =========================
 CATEGORY FILTER
 ========================= */
 
-window.filterCategory = function(category){
+window.filterCategory = function (category) {
 
-document.getElementById("searchInput").value = "";
+    document.getElementById("searchInput").value = "";
 
-let cards =
-document.querySelectorAll(".card");
+    let cards =
+    document.querySelectorAll(".card");
 
-cards.forEach(card=>{
+    cards.forEach(card => {
 
-if(category === "all"){
+        if (category === "all") {
 
-card.style.display = "block";
-return;
+            card.style.display = "block";
+            return;
 
-}
+        }
 
-if(card.dataset.category === category){
+        if (card.dataset.category === category) {
 
-card.style.display = "block";
+            card.style.display = "block";
 
-}else{
+        } else {
 
-card.style.display = "none";
+            card.style.display = "none";
 
-}
+        }
 
-});
+    });
 
-}
+};
 
 
 /* =========================
 ADD TO CART
 ========================= */
 
-window.addToCart = function(name,price){
+window.addToCart = function (name, price) {
 
-cart.push({name,price});
+    cart.push({ name, price });
 
-renderCart();
+    renderCart();
 
-openCart();
+    openCart();
 
-}
+};
 
 
 /* =========================
 RENDER CART
 ========================= */
 
-function renderCart(){
+function renderCart() {
 
-let cartItems =
-document.getElementById("cart-items");
+    let cartItems =
+    document.getElementById("cart-items");
 
-cartItems.innerHTML = "";
+    cartItems.innerHTML = "";
 
-if(cart.length === 0){
+    if (cart.length === 0) {
 
-cartItems.innerHTML =
-"<p>Your cart is empty</p>";
+        cartItems.innerHTML =
+        "<p>Your cart is empty</p>";
 
-return;
+        return;
 
-}
+    }
 
-cart.forEach((item,index)=>{
+    cart.forEach((item, index) => {
 
-cartItems.innerHTML += `
+        cartItems.innerHTML += `
 
-<div class="cart-item">
+            <div class="cart-item">
 
-<div>
+                <div>
 
-<h3>${item.name}</h3>
+                    <h3>${item.name}</h3>
 
-<p>₹${item.price}</p>
+                    <p>₹${item.price}</p>
 
-</div>
+                </div>
 
-<button class="remove-btn"
-onclick="removeItem(${index})">
+                <button class="remove-btn"
+                onclick="removeItem(${index})">
 
-Remove
+                    Remove
 
-</button>
+                </button>
 
-</div>
+            </div>
 
-`;
+        `;
 
-});
+    });
 
 }
 
@@ -293,149 +293,151 @@ Remove
 REMOVE ITEM
 ========================= */
 
-window.removeItem = function(index){
+window.removeItem = function (index) {
 
-cart.splice(index,1);
+    cart.splice(index, 1);
 
-renderCart();
+    renderCart();
 
-}
+};
 
 
 /* =========================
 OPEN CART
 ========================= */
 
-window.openCart = function(){
+window.openCart = function () {
 
-document
-.getElementById("cartPopup")
-.classList.add("active");
+    document
+    .getElementById("cartPopup")
+    .classList.add("active");
 
-}
+};
 
 
 /* =========================
 CLOSE CART
 ========================= */
 
-window.closeCart = function(){
+window.closeCart = function () {
 
-document
-.getElementById("cartPopup")
-.classList.remove("active");
+    document
+    .getElementById("cartPopup")
+    .classList.remove("active");
 
-}
+};
 
 
 /* =========================
 WHATSAPP ORDER
 ========================= */
 
-window.orderWhatsApp = function(product){
+window.orderWhatsApp = function (product) {
 
-let phone = "919174709695";
+    let phone = "919174709695";
 
-let message =
-`Hello I want to order ${product}`;
+    let message =
+    `Hello I want to order ${product}`;
 
-window.open(
-`https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
-"_blank"
-);
+    window.open(
+        `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
+        "_blank"
+    );
 
-}
+};
 
 
 /* =========================
 PRODUCT VIEW POPUP
 ========================= */
 
-window.viewProduct = function(
-product,
-price,
-image1,
-image2,
-image3,
-image4,
-image5,
-description
-){
+window.viewProduct = function (
+    product,
+    price,
+    image1,
+    image2,
+    image3,
+    image4,
+    image5,
+    description
+) {
 
-let modal = document.createElement("div");
+    let modal =
+    document.createElement("div");
 
-modal.classList.add("product-modal");
+    modal.classList.add("product-modal");
 
-modal.innerHTML = `
+    modal.innerHTML = `
 
-<div class="product-modal-overlay">
+        <div class="product-modal-overlay">
 
-<div class="modal-content">
+            <div class="modal-content">
 
-<span class="close-modal"
-onclick="closeModal()">
+                <span class="close-modal"
+                onclick="closeModal()">
 
-&times;
+                    &times;
 
-</span>
+                </span>
 
-<div class="gallery">
+                <div class="gallery">
 
-<img src="${image1}"
-class="main-popup-image">
+                    <img src="${image1}"
+                    class="main-popup-image">
 
-<div class="gallery-row">
+                    <div class="gallery-row">
 
-<img src="${image1}">
-<img src="${image2}">
-<img src="${image3}">
-<img src="${image4}">
-<img src="${image5}">
+                        <img src="${image1}">
+                        <img src="${image2}">
+                        <img src="${image3}">
+                        <img src="${image4}">
+                        <img src="${image5}">
 
-</div>
+                    </div>
 
-</div>
+                </div>
 
-<h2>${product}</h2>
+                <h2>${product}</h2>
 
-<p class="modal-price">
+                <p class="modal-price">
+                    ₹${price}
+                </p>
 
-₹${price}
+                <p class="modal-description">
+                    ${description}
+                </p>
 
-</p>
+                <button class="modal-cart-btn"
+                onclick="addToCart('${product}', ${price})">
 
-<p class="modal-description">
+                    Add To Cart
 
-${description}
+                </button>
 
-</p>
+            </div>
 
-<button class="modal-cart-btn"
-onclick="addToCart('${product}',${price})">
+        </div>
 
-Add To Cart
+    `;
 
-</button>
+    document.body.appendChild(modal);
 
-</div>
-
-</div>
-
-`;
-
-document.body.appendChild(modal);
-
-}
+};
 
 
 /* =========================
 CLOSE MODAL
 ========================= */
 
-window.closeModal = function(){
+window.closeModal = function () {
 
-document
-.querySelector(".product-modal")
-.remove();
+    let modal =
+    document.querySelector(".product-modal");
 
-}
+    if (modal) {
+
+        modal.remove();
+
+    }
+
+};
