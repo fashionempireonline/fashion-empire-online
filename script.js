@@ -9,9 +9,7 @@ import {
 from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 
-/* =========================
-FIREBASE CONFIG
-========================= */
+/* FIREBASE CONFIG */
 
 const firebaseConfig = {
 
@@ -30,32 +28,25 @@ const firebaseConfig = {
 };
 
 
-/* =========================
-FIREBASE START
-========================= */
+/* FIREBASE START */
 
 const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
 
-/* =========================
-GLOBAL CART
-========================= */
+/* GLOBAL CART */
 
 let cart = [];
 
 
-/* =========================
-FIREBASE PRODUCTS LOAD
-========================= */
+/* FIREBASE PRODUCTS LOAD */
 
 async function loadFirebaseProducts() {
 
     try {
 
-        const querySnapshot =
-        await getDocs(
+        const querySnapshot = await getDocs(
             collection(db, "products")
         );
 
@@ -70,78 +61,79 @@ async function loadFirebaseProducts() {
 
             container.innerHTML += `
 
-                <div class="card"
-                data-category="${product.category || 'all'}">
+            <div class="card"
+            data-category="${product.category || 'all'}">
 
-                    <div class="image">
+                <div class="image">
 
-                        <img src="${product.image1 || ''}">
+                    <img src="${product.image1 || ''}">
+
+                </div>
+
+                <div class="info">
+
+                    <h3>${product.title || 'Product'}</h3>
+
+                    <p>${product.description || ''}</p>
+
+                    <div class="price">
+
+                        <span class="new">
+                            ₹${product.price || 0}
+                        </span>
+
+                        <span class="old">
+                            ₹${product.oldprice || ""}
+                        </span>
 
                     </div>
 
-                    <div class="info">
+                    <div class="rating">
+                        ⭐ 4.8
+                    </div>
 
-                        <h3>${product.title || 'Product'}</h3>
+                    <div class="card-buttons">
 
-                        <p>${product.discount || ''}</p>
+                        <button class="cart-btn"
+                        onclick="addToCart('${product.title}', ${product.price || 0})">
 
-                        <div class="price">
+                            Add To Cart
 
-                            <span class="new">
-                                ₹${product.price || 0}
-                            </span>
+                        </button>
 
-                            <span class="old">
-                                ₹${product.oldprice || ""}
-                            </span>
+                        <button class="view-btn"
 
-                        </div>
+                        onclick="viewProduct(
+                            '${product.title || ''}',
+                            ${product.price || 0},
+                            '${product.image1 || ''}',
+                            '${product.image2 || ''}',
+                            '${product.image3 || ''}',
+                            '${product.image4 || ''}',
+                            '${product.image5 || ''}',
+                            '${product.description || ''}'
+                        )">
 
-                        <div class="rating">
-                            ⭐ 4.8
-                        </div>
-
-                        <div class="card-buttons">
-
-                            <button class="cart-btn"
-                            onclick="addToCart('${product.title}', ${product.price || 0})">
-
-                                Add To Cart
-
-                            </button>
-
-                            <button class="view-btn"
-
-                            onclick="viewProduct(
-                                '${product.title || ''}',
-                                ${product.price || 0},
-                                '${product.image1 || ''}',
-                                '${product.image2 || ''}',
-                                '${product.image3 || ''}',
-                                '${product.image4 || ''}',
-                                '${product.image5 || ''}',
-                                '${product.description || ''}'
-                            )">
-
-                                View
-
-                            </button>
-
-                        </div>
-
-                        <button class="whatsapp-btn"
-
-                        onclick="orderWhatsApp('${product.title || ''}')">
-
-                            Order On WhatsApp
+                            View
 
                         </button>
 
                     </div>
 
+                    <button class="whatsapp-btn"
+
+                    onclick="orderWhatsApp('${product.title || ''}')">
+
+                        Order On WhatsApp
+
+                    </button>
+
                 </div>
 
+            </div>
+
             `;
+
         });
 
     } catch (error) {
@@ -155,9 +147,7 @@ async function loadFirebaseProducts() {
 loadFirebaseProducts();
 
 
-/* =========================
-SEARCH
-========================= */
+/* SEARCH */
 
 window.searchProducts = function () {
 
@@ -189,9 +179,7 @@ window.searchProducts = function () {
 };
 
 
-/* =========================
-CATEGORY FILTER
-========================= */
+/* CATEGORY FILTER */
 
 window.filterCategory = function (category) {
 
@@ -224,9 +212,7 @@ window.filterCategory = function (category) {
 };
 
 
-/* =========================
-ADD TO CART
-========================= */
+/* ADD TO CART */
 
 window.addToCart = function (name, price) {
 
@@ -239,9 +225,7 @@ window.addToCart = function (name, price) {
 };
 
 
-/* =========================
-RENDER CART
-========================= */
+/* RENDER CART */
 
 function renderCart() {
 
@@ -263,24 +247,24 @@ function renderCart() {
 
         cartItems.innerHTML += `
 
-            <div class="cart-item">
+        <div class="cart-item">
 
-                <div>
+            <div>
 
-                    <h3>${item.name}</h3>
+                <h3>${item.name}</h3>
 
-                    <p>₹${item.price}</p>
-
-                </div>
-
-                <button class="remove-btn"
-                onclick="removeItem(${index})">
-
-                    Remove
-
-                </button>
+                <p>₹${item.price}</p>
 
             </div>
+
+            <button class="remove-btn"
+            onclick="removeItem(${index})">
+
+                Remove
+
+            </button>
+
+        </div>
 
         `;
 
@@ -289,9 +273,7 @@ function renderCart() {
 }
 
 
-/* =========================
-REMOVE ITEM
-========================= */
+/* REMOVE ITEM */
 
 window.removeItem = function (index) {
 
@@ -302,9 +284,7 @@ window.removeItem = function (index) {
 };
 
 
-/* =========================
-OPEN CART
-========================= */
+/* OPEN CART */
 
 window.openCart = function () {
 
@@ -315,9 +295,7 @@ window.openCart = function () {
 };
 
 
-/* =========================
-CLOSE CART
-========================= */
+/* CLOSE CART */
 
 window.closeCart = function () {
 
@@ -328,9 +306,7 @@ window.closeCart = function () {
 };
 
 
-/* =========================
-WHATSAPP ORDER
-========================= */
+/* WHATSAPP ORDER */
 
 window.orderWhatsApp = function (product) {
 
@@ -347,9 +323,7 @@ window.orderWhatsApp = function (product) {
 };
 
 
-/* =========================
-PRODUCT VIEW POPUP
-========================= */
+/* PRODUCT VIEW POPUP */
 
 window.viewProduct = function (
     product,
@@ -369,54 +343,54 @@ window.viewProduct = function (
 
     modal.innerHTML = `
 
-        <div class="product-modal-overlay">
+    <div class="product-modal-overlay">
 
-            <div class="modal-content">
+        <div class="modal-content">
 
-                <span class="close-modal"
-                onclick="closeModal()">
+            <span class="close-modal"
+            onclick="closeModal()">
 
-                    &times;
+                &times;
 
-                </span>
+            </span>
 
-                <div class="gallery">
+            <div class="gallery">
 
-                    <img src="${image1}"
-                    class="main-popup-image">
+                <img src="${image1}"
+                class="main-popup-image">
 
-                    <div class="gallery-row">
+                <div class="gallery-row">
 
-                        <img src="${image1}">
-                        <img src="${image2}">
-                        <img src="${image3}">
-                        <img src="${image4}">
-                        <img src="${image5}">
-
-                    </div>
+                    <img src="${image1}">
+                    <img src="${image2}">
+                    <img src="${image3}">
+                    <img src="${image4}">
+                    <img src="${image5}">
 
                 </div>
 
-                <h2>${product}</h2>
-
-                <p class="modal-price">
-                    ₹${price}
-                </p>
-
-                <p class="modal-description">
-                    ${description}
-                </p>
-
-                <button class="modal-cart-btn"
-                onclick="addToCart('${product}', ${price})">
-
-                    Add To Cart
-
-                </button>
-
             </div>
 
+            <h2>${product}</h2>
+
+            <p class="modal-price">
+                ₹${price}
+            </p>
+
+            <p class="modal-description">
+                ${description}
+            </p>
+
+            <button class="modal-cart-btn"
+            onclick="addToCart('${product}', ${price})">
+
+                Add To Cart
+
+            </button>
+
         </div>
+
+    </div>
 
     `;
 
@@ -425,9 +399,7 @@ window.viewProduct = function (
 };
 
 
-/* =========================
-CLOSE MODAL
-========================= */
+/* CLOSE MODAL */
 
 window.closeModal = function () {
 
