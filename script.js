@@ -76,6 +76,10 @@ async function loadFirebaseProducts() {
 
 
                     <div class="price">
+                    
+                        <span class="discount">
+                            ₹${product.discount || 0}
+                        </span>
 
                         <span class="new">
                             ₹${product.price || 0}
@@ -88,7 +92,7 @@ async function loadFirebaseProducts() {
                     </div>
 
                     <div class="rating">
-                        ⭐ 4.8
+                        coming soon
                     </div>
 
                     <div class="card-buttons">
@@ -119,7 +123,8 @@ async function loadFirebaseProducts() {
                     </div>
 
                     <button class="whatsapp-btn"
-                    onclick="orderWhatsApp('${product.title || ''}')">
+                    onclick="orderWhatsApp('${product.title || ''} ${product.image1|| ''}')">
+            
 
                         Order On WhatsApp
 
