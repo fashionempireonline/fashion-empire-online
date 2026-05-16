@@ -338,6 +338,14 @@ window.viewProduct = function (
     description
 ) {
 
+    let oldModal = document.querySelector(".product-modal");
+
+    if(oldModal){
+
+        oldModal.remove();
+
+    }
+
     let modal =
     document.createElement("div");
 
@@ -352,43 +360,81 @@ window.viewProduct = function (
             <span class="close-modal"
             onclick="closeModal()">
 
-                &times;
+                ✕
 
             </span>
 
-            <div class="gallery">
+
+            <div class="modal-left">
 
                 <img src="${image1}"
-                class="main-popup-image">
+                class="main-popup-image"
+                id="mainPopupImage">
+
 
                 <div class="gallery-row">
 
                     ${image1 ? `<img src="${image1}" onclick="changeMainImage('${image1}')">` : ""}
+
                     ${image2 ? `<img src="${image2}" onclick="changeMainImage('${image2}')">` : ""}
+
                     ${image3 ? `<img src="${image3}" onclick="changeMainImage('${image3}')">` : ""}
+
                     ${image4 ? `<img src="${image4}" onclick="changeMainImage('${image4}')">` : ""}
+
                     ${image5 ? `<img src="${image5}" onclick="changeMainImage('${image5}')">` : ""}
 
                 </div>
 
             </div>
 
-            <h2>${product}</h2>
 
-            <p class="modal-price">
-                ₹${price}
-            </p>
+            <div class="modal-right">
 
-            <p class="modal-description">
-                ${description}
-            </p>
+                <h2 class="modal-title">
 
-            <button class="modal-cart-btn"
-            onclick="addToCart('${product}', ${price})">
+                    ${product}
 
-                Add To Cart
+                </h2>
 
-            </button>
+                <div class="modal-rating">
+
+                    ⭐⭐⭐⭐⭐ 4.8 Rating
+
+                </div>
+
+                <p class="modal-price">
+
+                    ₹${price}
+
+                </p>
+
+                <p class="modal-description">
+
+                    ${description}
+
+                </p>
+
+
+                <div class="modal-buttons">
+
+                    <button class="modal-cart-btn"
+                    onclick="addToCart('${product}', ${price})">
+
+                        Add To Cart
+
+                    </button>
+
+                    <button class="modal-whatsapp-btn"
+                    onclick="orderWhatsApp('${product}')">
+
+                        Order Now
+
+                    </button>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -405,7 +451,9 @@ window.viewProduct = function (
 
 window.changeMainImage = function(image){
 
-    document.querySelector(".main-popup-image").src = image;
+    document
+    .getElementById("mainPopupImage")
+    .src = image;
 
 }
 
@@ -424,3 +472,19 @@ window.closeModal = function () {
     }
 
 };
+
+
+/* OUTSIDE CLICK CLOSE */
+
+window.addEventListener("click", function(event){
+
+    let overlay =
+    document.querySelector(".product-modal-overlay");
+
+    if(event.target === overlay){
+
+        closeModal();
+
+    }
+
+});
