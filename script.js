@@ -78,7 +78,7 @@ async function loadFirebaseProducts() {
                     <div class="price">
                     
                         <span class="discount">
-                            ₹${product.discount || 0}
+                            ${product.discount || 0}
                         </span>
 
                         <span class="new">
@@ -403,7 +403,7 @@ window.viewProduct = function (
 
                 <div class="modal-rating">
 
-                    ⭐⭐⭐⭐⭐ 4.8 Rating
+                    coming soon Rating
 
                 </div>
 
