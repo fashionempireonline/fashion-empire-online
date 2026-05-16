@@ -74,7 +74,6 @@ async function loadFirebaseProducts() {
 
                     <h3>${product.title || 'Product'}</h3>
 
-                    <p>${product.description || ''}</p>
 
                     <div class="price">
 
