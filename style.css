@@ -175,31 +175,33 @@ font-size:14px;
 /* PRODUCTS */
 .products{
 width:100%;
-padding:20px;
+padding:12px;
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:22px;
+
+/* ✅ MOBILE PE 2 PRODUCTS */
+grid-template-columns:repeat(2,1fr);
+
+gap:12px;
 }
 
+/* PRODUCT CARD */
 .card{
 background:white;
-border-radius:22px;
+border-radius:14px;
 overflow:hidden;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
-transition:0.4s;
+box-shadow:0 4px 12px rgba(0,0,0,0.08);
+transition:0.3s;
 width:100%;
 }
 
 .card:hover{
-transform:translateY(-8px);
-background:#111;
-color:white;
+transform:translateY(-5px);
 }
 
-/* ✅ FIXED IMAGE SECTION */
+/* IMAGE */
 .image{
 width:100%;
-height:320px;
+height:220px;
 overflow:hidden;
 display:flex;
 justify-content:center;
@@ -210,67 +212,67 @@ background:#fff;
 .image img{
 width:100%;
 height:100%;
-object-fit:contain;
-transform:scale(1.1);
-transition:0.4s;
+object-fit:cover;
+transition:0.3s;
 }
 
 .card:hover .image img{
-transform:scale(1.1);
+transform:scale(1.05);
 }
 
 /* INFO */
 .info{
-padding:16px;
+padding:10px;
 }
 
 .info h3{
-font-size:20px;
-margin-bottom:8px;
+font-size:14px;
+margin-bottom:5px;
+line-height:1.4;
 word-break:break-word;
 }
 
 .price{
 display:flex;
-gap:10px;
-margin-top:8px;
+gap:8px;
+margin-top:5px;
 flex-wrap:wrap;
 align-items:center;
 }
 
 .new{
-font-size:22px;
+font-size:18px;
 font-weight:700;
 }
 
 .old{
+font-size:13px;
 text-decoration:line-through;
 color:gray;
 }
 
 .rating{
-margin-top:8px;
-font-size:15px;
+margin-top:5px;
+font-size:13px;
 }
 
 /* BUTTONS */
 .card-buttons{
 display:flex;
-gap:10px;
-margin-top:15px;
-flex-wrap:wrap;
+flex-direction:column;
+gap:8px;
+margin-top:12px;
 }
 
 .card-buttons button{
-flex:1;
-min-width:120px;
-padding:12px;
+width:100%;
+padding:10px;
 border:none;
-border-radius:12px;
+border-radius:10px;
 cursor:pointer;
 font-weight:600;
+font-size:13px;
 transition:0.3s;
-font-size:14px;
 }
 
 .cart-btn{
@@ -284,30 +286,16 @@ color:white;
 }
 
 .whatsapp-btn{
-margin-top:10px;
+margin-top:8px;
 width:100%;
-padding:12px;
+padding:10px;
 border:none;
-border-radius:12px;
+border-radius:10px;
 background:#25D366;
 color:white;
 font-weight:600;
 cursor:pointer;
-transition:0.3s;
-font-size:14px;
-}
-
-.card:hover .cart-btn{
-background:white;
-color:#111;
-}
-
-.card:hover .view-btn{
-background:#ff4b2b;
-}
-
-.card:hover .whatsapp-btn{
-background:#1ebe5d;
+font-size:13px;
 }
 
 /* CART */
@@ -328,36 +316,6 @@ box-shadow:-5px 0 20px rgba(0,0,0,0.2);
 
 .cart-popup.active{
 right:0;
-}
-
-.cart-item{
-padding:15px 0;
-border-bottom:1px solid #ddd;
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:10px;
-}
-
-.remove-btn{
-padding:8px 14px;
-background:red;
-color:white;
-border:none;
-border-radius:10px;
-cursor:pointer;
-font-weight:600;
-}
-
-.close-cart{
-width:100%;
-padding:12px;
-background:#111;
-color:white;
-border:none;
-border-radius:12px;
-margin-top:20px;
-cursor:pointer;
 }
 
 /* PRODUCT MODAL */
@@ -398,9 +356,10 @@ from{transform:scale(0.7);opacity:0;}
 to{transform:scale(1);opacity:1;}
 }
 
-.gallery{width:100%;}
+.gallery{
+width:100%;
+}
 
-/* ✅ FIXED POPUP IMAGE */
 .main-popup-image{
 width:100%;
 height:auto;
@@ -408,7 +367,6 @@ max-height:500px;
 object-fit:contain;
 border-radius:20px;
 margin-bottom:15px;
-transform:scale(1.1);
 }
 
 .gallery-row{
@@ -427,11 +385,6 @@ cursor:pointer;
 transition:0.3s;
 border:2px solid transparent;
 flex-shrink:0;
-}
-
-.gallery-row img:hover{
-transform:scale(1.05);
-border-color:#ff416c;
 }
 
 .modal-content h2{
@@ -472,13 +425,6 @@ right:20px;
 top:15px;
 font-size:34px;
 cursor:pointer;
-transition:0.3s;
-z-index:10;
-}
-
-.close-modal:hover{
-transform:rotate(90deg);
-color:red;
 }
 
 /* LOGIN */
@@ -501,82 +447,74 @@ box-shadow:0 15px 40px rgba(0,0,0,0.2);
 text-align:center;
 }
 
-.auth-box h2{margin-bottom:25px;font-size:32px;}
-
-.auth-box input{
-width:100%;
-padding:14px;
-margin:12px 0;
-border:1px solid #ddd;
-border-radius:14px;
-font-size:15px;
-}
-
-.auth-box button{
-width:100%;
-padding:14px;
-border:none;
-border-radius:14px;
-background:#111;
-color:white;
-font-size:16px;
-font-weight:600;
-cursor:pointer;
-margin-top:10px;
-}
-
-.auth-box p{margin-top:15px;}
-
-.auth-box a{
-color:#ff416c;
-text-decoration:none;
-font-weight:600;
-}
-
-/* SCROLLBAR */
-::-webkit-scrollbar{width:8px;height:8px;}
-::-webkit-scrollbar-thumb{background:#ff416c;border-radius:10px;}
-
-/* BUTTON HOVER */
-button:hover{
-opacity:0.92;
-transform:scale(1.02);
-transition:0.3s;
-}
-
 /* TABLET */
-@media(max-width:992px){
-.modal-content{grid-template-columns:1fr;}
-.main-popup-image{height:350px;}
+@media(min-width:768px){
+.products{
+grid-template-columns:repeat(3,1fr);
+}
+
+.modal-content{
+grid-template-columns:1fr;
+}
+
+.image{
+height:260px;
+}
+}
+
+/* DESKTOP */
+@media(min-width:1200px){
+.products{
+grid-template-columns:repeat(4,1fr);
+}
+
+.image{
+height:300px;
+}
 }
 
 /* MOBILE */
-@media(max-width:768px){
-header{padding:12px;}
-.navbar{flex-direction:column;align-items:stretch;}
-.logo{text-align:center;}
-.nav-icons{justify-content:center;}
-.hero{margin:10px;padding:35px 15px;}
-.products{grid-template-columns:1fr;padding:12px;gap:18px;}
-.image{height:280px;}
-.product-modal{padding:10px;align-items:flex-start;}
-.modal-content{padding:18px;border-radius:20px;grid-template-columns:1fr;max-height:none;height:auto;overflow-y:visible;margin-top:20px;}
-.main-popup-image{height:280px;}
-.gallery-row img{width:65px;height:65px;}
-.cart-popup{width:100%;right:-100%;}
-.circle{width:65px;height:65px;font-size:11px;}
-.card-buttons{flex-direction:column;}
-.card-buttons button{width:100%;}
+@media(max-width:480px){
+
+.products{
+gap:10px;
+padding:10px;
 }
 
-/* SMALL MOBILE */
-@media(max-width:480px){
-.hero h1{font-size:24px;}
-.hero p{font-size:13px;}
-.image{height:240px;}
-.main-popup-image{height:240px;}
-.modal-content{padding:15px;}
-.modal-content h2{font-size:22px;}
-.modal-price{font-size:24px;}
-.search-box input{padding:11px;font-size:14px;}
-        }
+.image{
+height:190px;
+}
+
+.info h3{
+font-size:13px;
+}
+
+.new{
+font-size:16px;
+}
+
+.old{
+font-size:12px;
+}
+
+.rating{
+font-size:12px;
+}
+
+.card-buttons button,
+.whatsapp-btn{
+padding:9px;
+font-size:12px;
+}
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{
+width:8px;
+height:8px;
+}
+
+::-webkit-scrollbar-thumb{
+background:#ff416c;
+border-radius:10px;
+}
