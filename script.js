@@ -39,6 +39,10 @@ const db = getFirestore(app);
 
 let cart = [];
 
+/* PRODUCT STORAGE */
+
+let allProducts = {};
+
 
 /* FIREBASE PRODUCTS LOAD */
 
@@ -59,6 +63,10 @@ async function loadFirebaseProducts() {
 
             let product = doc.data();
 
+            /* SAVE PRODUCT */
+
+            allProducts[doc.id || product.title] = product;
+
             container.innerHTML += `
 
             <div class="card"
@@ -74,9 +82,8 @@ async function loadFirebaseProducts() {
 
                     <h3>${product.title || 'Product'}</h3>
 
-
                     <div class="price">
-                    
+                        
                         <span class="discount">
                             ${product.discount || 0}
                         </span>
@@ -105,16 +112,7 @@ async function loadFirebaseProducts() {
                         </button>
 
                         <button class="view-btn"
-                        onclick='viewProduct(
-                            ${JSON.stringify(product.title || "")},
-                            ${product.price || 0},
-                            ${JSON.stringify(product.image1 || "")},
-                            ${JSON.stringify(product.image2 || "")},
-                            ${JSON.stringify(product.image3 || "")},
-                            ${JSON.stringify(product.image4 || "")},
-                            ${JSON.stringify(product.image5 || "")},
-                            ${JSON.stringify(product.description || "")}
-                        )'>
+                        onclick="viewProductByIndex('${doc.id || product.title}')">
 
                             View
 
@@ -123,9 +121,8 @@ async function loadFirebaseProducts() {
                     </div>
 
                     <button class="whatsapp-btn"
-                    onclick="orderWhatsApp('${product.title || ''} ${product.image1|| ''}')">
-            
-
+                    onclick="orderWhatsApp('${product.title || ''}')">
+                    
                         Order On WhatsApp
 
                     </button>
@@ -147,6 +144,28 @@ async function loadFirebaseProducts() {
 }
 
 loadFirebaseProducts();
+
+
+/* VIEW PRODUCT BY INDEX */
+
+window.viewProductByIndex = function(id){
+
+    let product = allProducts[id];
+
+    if(!product) return;
+
+    viewProduct(
+        product.title || "",
+        product.price || 0,
+        product.image1 || "",
+        product.image2 || "",
+        product.image3 || "",
+        product.image4 || "",
+        product.image5 || "",
+        product.description || ""
+    );
+
+}
 
 
 /* SEARCH */
@@ -403,7 +422,7 @@ window.viewProduct = function (
 
                 <div class="modal-rating">
 
-                    coming soon Rating
+                    ⭐ 4.8 Rating
 
                 </div>
 
@@ -492,3 +511,35 @@ window.addEventListener("click", function(event){
     }
 
 });
+
+
+/* =========================
+MOBILE MODAL FIX
+========================= */
+
+window.addEventListener("resize", fixMobileModal);
+
+function fixMobileModal(){
+
+    if(window.innerWidth <= 768){
+
+        let modalContent =
+        document.querySelector(".modal-content");
+
+        if(modalContent){
+
+            modalContent.style.display = "flex";
+            modalContent.style.flexDirection = "column";
+            modalContent.style.width = "100%";
+            modalContent.style.maxWidth = "100%";
+            modalContent.style.padding = "18px";
+            modalContent.style.gap = "15px";
+            modalContent.style.borderRadius = "18px";
+
+        }
+
+    }
+
+}
+
+fixMobileModal();
