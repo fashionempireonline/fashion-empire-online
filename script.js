@@ -476,8 +476,31 @@ window.toggleWishlist = function(
 
     renderWishlist();
 
-}
+    /* HEART ICON UPDATE */
 
+    let heartIcon =
+    document.querySelector(".wishlist-popup-btn i");
+
+    if(heartIcon){
+
+        let found =
+        wishlist.find(item => item.title === title);
+
+        if(found){
+
+            heartIcon.classList.remove("fa-regular");
+            heartIcon.classList.add("fa-solid");
+
+        }else{
+
+            heartIcon.classList.remove("fa-solid");
+            heartIcon.classList.add("fa-regular");
+
+        }
+
+    }
+
+}
 
 /* RENDER WISHLIST */
 
@@ -652,6 +675,41 @@ window.viewProduct = function (
             </div>
 
             <div class="modal-right">
+
+                <!-- WISHLIST BUTTON -->
+
+                <div style="
+                display:flex;
+                justify-content:flex-end;
+                margin-bottom:15px;
+                ">
+
+                    <button
+                    class="wishlist-popup-btn"
+                    onclick="toggleWishlist(
+                    \`${product}\`,
+                    \`${price}\`,
+                    \`${image1}\`
+                    )"
+                    style="
+                    width:50px;
+                    height:50px;
+                    border:none;
+                    border-radius:50%;
+                    background:#f3f3f3;
+                    font-size:20px;
+                    cursor:pointer;
+                    ">
+
+                        <i class="${
+wishlist.find(item => item.title === product)
+? 'fa-solid'
+: 'fa-regular'
+} fa-heart"></i>
+
+                    </button>
+
+                </div>
 
                 <h2 class="modal-title">
 
