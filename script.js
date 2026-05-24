@@ -39,9 +39,29 @@ const db = getFirestore(app);
 
 let cart = [];
 
+/* GLOBAL WISHLIST */
+
+let wishlist = [];
+
 /* PRODUCT STORAGE */
 
 let allProducts = {};
+
+
+/* AUTO DISCOUNT */
+
+function calculateDiscount(oldPrice, price){
+
+    if(!oldPrice || !price) return "";
+
+    let discount =
+    Math.round(
+        ((oldPrice - price) / oldPrice) * 100
+    );
+
+    return `${discount}% OFF`;
+
+}
 
 
 /* FIREBASE PRODUCTS LOAD */
@@ -63,8 +83,6 @@ async function loadFirebaseProducts() {
 
             let product = doc.data();
 
-            /* SAVE PRODUCT */
-
             allProducts[doc.id || product.title] = product;
 
             container.innerHTML += `
@@ -82,11 +100,12 @@ async function loadFirebaseProducts() {
 
                     <h3>${product.title || 'Product'}</h3>
 
+                    <p class="description"
+                    style="display:none;">
+                    ${product.description || ""}
+                    </p>
+
                     <div class="price">
-                        
-                        <span class="discount">
-                            ${product.discount || 0}
-                        </span>
 
                         <span class="new">
                             ₹${product.price || 0}
@@ -96,16 +115,24 @@ async function loadFirebaseProducts() {
                             ₹${product.oldprice || ""}
                         </span>
 
+                        <span class="discount">
+                            ${calculateDiscount(product.oldprice, product.price)}
+                        </span>
+
                     </div>
 
                     <div class="rating">
-                        coming soon
+                        ⭐⭐⭐⭐⭐ 4.8
                     </div>
 
                     <div class="card-buttons">
 
                         <button class="cart-btn"
-                        onclick="addToCart('${product.title || ''}', ${product.price || 0})">
+                        onclick="addToCart(
+                        '${product.title || ''}',
+                        ${product.price || 0},
+                        '${product.image1 || ''}'
+                        )">
 
                             Add To Cart
 
@@ -114,7 +141,7 @@ async function loadFirebaseProducts() {
                         <button class="view-btn"
                         onclick="viewProductByIndex('${doc.id || product.title}')">
 
-                            View
+                            View Product
 
                         </button>
 
@@ -122,7 +149,9 @@ async function loadFirebaseProducts() {
 
                     <button class="whatsapp-btn"
                     onclick="orderWhatsApp('${product.title || ''}')">
-                    
+
+                        <i class="fa-brands fa-whatsapp"></i>
+
                         Order On WhatsApp
 
                     </button>
@@ -146,7 +175,7 @@ async function loadFirebaseProducts() {
 loadFirebaseProducts();
 
 
-/* VIEW PRODUCT BY INDEX */
+/* VIEW PRODUCT */
 
 window.viewProductByIndex = function(id){
 
@@ -164,40 +193,6 @@ window.viewProductByIndex = function(id){
         product.image5 || "",
         product.description || ""
     );
-
-}
-
-
-/* SEARCH */
-
-window.searchProducts = function () {
-
-    let input =
-    document.getElementById("searchInput")
-    .value
-    .toLowerCase();
-
-    let cards =
-    document.querySelectorAll(".card");
-
-    cards.forEach(card => {
-
-        let title =
-        card.querySelector("h3")
-        .innerText
-        .toLowerCase();
-
-        if (title.includes(input)) {
-
-            card.style.display = "block";
-
-        } else {
-
-            card.style.display = "none";
-
-        }
-
-    });
 
 };
 
@@ -239,9 +234,25 @@ window.filterCategory = function (category) {
 
 /* ADD TO CART */
 
-window.addToCart = function (name, price) {
+window.addToCart = function (name, price, image) {
 
-    cart.push({ name, price });
+    let existing =
+    cart.find(item => item.name === name);
+
+    if(existing){
+
+        existing.qty += 1;
+
+    }else{
+
+        cart.push({
+            name,
+            price,
+            image,
+            qty:1
+        });
+
+    }
 
     renderCart();
 
@@ -272,22 +283,53 @@ function renderCart() {
 
         cartItems.innerHTML += `
 
-        <div class="cart-item">
+        <div class="cart-item"
+        style="
+        display:flex;
+        gap:12px;
+        margin-bottom:18px;
+        align-items:center;
+        background:#f7f7f7;
+        padding:10px;
+        border-radius:16px;
+        ">
 
-            <div>
+            <img
+            src="${item.image}"
+            style="
+            width:70px;
+            height:70px;
+            object-fit:cover;
+            border-radius:12px;
+            ">
 
-                <h3>${item.name}</h3>
+            <div style="flex:1;">
+
+                <h4>${item.name}</h4>
 
                 <p>₹${item.price}</p>
 
+                <div style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+                ">
+
+                    <button
+                    onclick="decreaseQty(${index})">
+                    -
+                    </button>
+
+                    <span>${item.qty}</span>
+
+                    <button
+                    onclick="increaseQty(${index})">
+                    +
+                    </button>
+
+                </div>
+
             </div>
-
-            <button class="remove-btn"
-            onclick="removeItem(${index})">
-
-                Remove
-
-            </button>
 
         </div>
 
@@ -298,7 +340,80 @@ function renderCart() {
 }
 
 
-/* REMOVE ITEM */
+/* INCREASE QTY */
+
+window.increaseQty = function(index){
+
+    cart[index].qty++;
+
+    renderCart();
+
+}
+
+
+/* DECREASE QTY */
+
+window.decreaseQty = function(index){
+
+    if(cart[index].qty > 1){
+
+        cart[index].qty--;
+
+    }else{
+
+        cart.splice(index,1);
+
+    }
+
+    renderCart();
+
+}
+
+
+/* LIVE SEARCH */
+
+window.searchProducts = function () {
+
+let search =
+document.getElementById("searchInput")
+.value
+.toLowerCase()
+.trim();
+
+let cards =
+document.querySelectorAll(".card");
+
+cards.forEach(card => {
+
+let title =
+card.querySelector("h3")
+?.innerText
+.toLowerCase() || "";
+
+let description =
+card.querySelector(".description")
+?.innerText
+.toLowerCase() || "";
+
+if(
+title.includes(search) ||
+description.includes(search)
+){
+
+card.style.display = "block";
+
+}else{
+
+card.style.display = "none";
+
+}
+
+});
+
+}
+
+
+/* REMOVE CART ITEM */
 
 window.removeItem = function (index) {
 
@@ -331,6 +446,137 @@ window.closeCart = function () {
 };
 
 
+/* WISHLIST SYSTEM */
+
+window.toggleWishlist = function(
+    title,
+    price,
+    image
+){
+
+    let existing =
+    wishlist.find(item => item.title === title);
+
+    if(existing){
+
+        wishlist =
+        wishlist.filter(
+            item => item.title !== title
+        );
+
+    } else {
+
+        wishlist.push({
+            title,
+            price,
+            image
+        });
+
+    }
+
+    renderWishlist();
+
+}
+
+
+/* RENDER WISHLIST */
+
+function renderWishlist(){
+
+    let wishlistItems =
+    document.getElementById("wishlist-items");
+
+    if(!wishlistItems) return;
+
+    wishlistItems.innerHTML = "";
+
+    if(wishlist.length === 0){
+
+        wishlistItems.innerHTML =
+        "<p style='padding:20px;'>Wishlist is empty</p>";
+
+        return;
+
+    }
+
+    wishlist.forEach((item,index)=>{
+
+        wishlistItems.innerHTML += `
+
+        <div class="wishlist-item"
+        style="
+        display:flex;
+        align-items:center;
+        gap:15px;
+        padding:15px;
+        border-bottom:1px solid #eee;
+        ">
+
+            <img src="${item.image}"
+            style="
+            width:70px;
+            height:70px;
+            object-fit:cover;
+            border-radius:12px;
+            ">
+
+            <div style="flex:1;">
+
+                <h4>${item.title}</h4>
+
+                <p>₹${item.price}</p>
+
+            </div>
+
+            <button
+            onclick="removeWishlist(${index})">
+
+                Remove
+
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+
+/* REMOVE WISHLIST */
+
+window.removeWishlist = function(index){
+
+    wishlist.splice(index,1);
+
+    renderWishlist();
+
+}
+
+
+/* OPEN WISHLIST */
+
+window.openWishlist = function(){
+
+    document
+    .getElementById("wishlistPopup")
+    .classList.add("active");
+
+}
+
+
+/* CLOSE WISHLIST */
+
+window.closeWishlist = function(){
+
+    document
+    .getElementById("wishlistPopup")
+    .classList.remove("active");
+
+}
+
+
 /* WHATSAPP ORDER */
 
 window.orderWhatsApp = function (product) {
@@ -348,7 +594,7 @@ window.orderWhatsApp = function (product) {
 };
 
 
-/* PRODUCT VIEW POPUP */
+/* PRODUCT POPUP */
 
 window.viewProduct = function (
     product,
@@ -387,30 +633,23 @@ window.viewProduct = function (
 
             </span>
 
-
             <div class="modal-left">
 
                 <img src="${image1}"
                 class="main-popup-image"
                 id="mainPopupImage">
 
-
                 <div class="gallery-row">
 
                     ${image1 ? `<img src="${image1}" onclick="changeMainImage('${image1}')">` : ""}
-
                     ${image2 ? `<img src="${image2}" onclick="changeMainImage('${image2}')">` : ""}
-
                     ${image3 ? `<img src="${image3}" onclick="changeMainImage('${image3}')">` : ""}
-
                     ${image4 ? `<img src="${image4}" onclick="changeMainImage('${image4}')">` : ""}
-
                     ${image5 ? `<img src="${image5}" onclick="changeMainImage('${image5}')">` : ""}
 
                 </div>
 
             </div>
-
 
             <div class="modal-right">
 
@@ -419,12 +658,6 @@ window.viewProduct = function (
                     ${product}
 
                 </h2>
-
-                <div class="modal-rating">
-
-                    ⭐ 4.8 Rating
-
-                </div>
 
                 <p class="modal-price">
 
@@ -438,11 +671,14 @@ window.viewProduct = function (
 
                 </p>
 
-
                 <div class="modal-buttons">
 
                     <button class="modal-cart-btn"
-                    onclick="addToCart('${product}', ${price})">
+                    onclick="addToCart(
+                    '${product}',
+                    ${price},
+                    '${image1}'
+                    )">
 
                         Add To Cart
 
@@ -497,49 +733,7 @@ window.closeModal = function () {
 };
 
 
-/* OUTSIDE CLICK CLOSE */
+/* INITIAL RENDER */
 
-window.addEventListener("click", function(event){
-
-    let overlay =
-    document.querySelector(".product-modal-overlay");
-
-    if(event.target === overlay){
-
-        closeModal();
-
-    }
-
-});
-
-
-/* =========================
-MOBILE MODAL FIX
-========================= */
-
-window.addEventListener("resize", fixMobileModal);
-
-function fixMobileModal(){
-
-    if(window.innerWidth <= 768){
-
-        let modalContent =
-        document.querySelector(".modal-content");
-
-        if(modalContent){
-
-            modalContent.style.display = "flex";
-            modalContent.style.flexDirection = "column";
-            modalContent.style.width = "100%";
-            modalContent.style.maxWidth = "100%";
-            modalContent.style.padding = "18px";
-            modalContent.style.gap = "15px";
-            modalContent.style.borderRadius = "18px";
-
-        }
-
-    }
-
-}
-
-fixMobileModal();
+renderCart();
+renderWishlist();
