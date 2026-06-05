@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product | Fashion Empire</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="product-page">
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<!-- PROMO BANNER -->
+<div class="promo-bar">
+  <div class="promo-track">
+    🔥 FREE DELIVERY on orders above ₹999 &nbsp;|&nbsp;
+    ✨ New Arrivals Every Week &nbsp;|&nbsp;
+    💬 WhatsApp par order karo &nbsp;|&nbsp;
+    🎁 Regular customers ko special discounts &nbsp;|&nbsp;
+    👑 Premium Reseller Quality &nbsp;|&nbsp;
+    🔥 FREE DELIVERY on orders above ₹999 &nbsp;|&nbsp;
+    ✨ New Arrivals Every Week &nbsp;|&nbsp;
+    💬 WhatsApp par order karo &nbsp;|&nbsp;
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="navbar">
+    <div class="logo" onclick="window.location.href='index.html'" style="cursor:pointer;">
+      <i class="fa-solid fa-crown"></i> FASHION EMPIRE
+    </div>
+    <div class="search-box">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Search products..." onclick="window.location.href='index.html'">
+    </div>
+    <div class="desktop-user">
+      <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Store</a>
+    </div>
+  </div>
+</header>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="index.html">Home</a>
+  <i class="fa-solid fa-chevron-right"></i>
+  <span id="breadcrumbTitle">Product</span>
+</div>
+
+<!-- PRODUCT DETAIL -->
+<section class="product-detail-section">
+  <div class="product-detail-container" id="productDetailContainer">
+
+    <!-- SKELETON -->
+    <div class="pd-left">
+      <div class="skeleton-img" style="height:400px;border-radius:20px;"></div>
+    </div>
+    <div class="pd-right">
+      <div class="skeleton-line" style="height:30px;margin-bottom:15px;"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line" style="height:100px;margin-top:20px;"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FLOATING WHATSAPP -->
+<a href="https://wa.me/919174709695" target="_blank" class="floating-whatsapp">
+  <i class="fa-brands fa-whatsapp"></i>
+</a>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-content">
+    <h2>FASHION EMPIRE</h2>
+    <p>Premium reseller fashion store.</p>
+    <div class="footer-socials">
+      <a href="https://instagram.com/_fashion_empire_online_" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+      <a href="https://wa.me/919174709695" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+    </div>
+    <p class="copyright">© 2026 Fashion Empire. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBw6dKBEDGfuh-he23WHJGG-L6mRDH_lFo",
+  authDomain: "fashion-empire-online.firebaseapp.com",
+  projectId: "fashion-empire-online",
+  storageBucket: "fashion-empire-online.firebasestorage.app",
+  messagingSenderId: "270445447440",
+  appId: "1:270445447440:web:17b31b34a0bbecbe87bd95"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+function showToast(msg){
+  let t = document.getElementById("toast");
+  if(!t) return;
+  t.innerText = msg;
+  t.classList.add("show");
+  setTimeout(()=> t.classList.remove("show"), 2500);
+}
+
+function calculateDiscount(oldPrice, price){
+  if(!oldPrice || !price) return "";
+  return Math.round(((oldPrice - price) / oldPrice) * 100) + "% OFF";
+}
+
+// Get product ID from URL
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+if(!id){
+  window.location.href = "index.html";
+} else {
+  loadProduct(id);
+}
+
+async function loadProduct(id){
+  try {
+    const docRef = doc(db, "products", id);
+    const docSnap = await getDoc(docRef);
+
+    if(!docSnap.exists()){
+      document.getElementById("productDetailContainer").innerHTML =
+        `<p style="color:#e00;padding:30px;grid-column:1/-1;">Product nahi mila.</p>`;
+      return;
+    }
+
+    const p = docSnap.data();
+    document.title = `${p.title} | Fashion Empire`;
+    document.getElementById("breadcrumbTitle").innerText = p.title || "Product";
+
+    let images = [p.image1, p.image2, p.image3, p.image4, p.image5].filter(Boolean);
+    let discount = calculateDiscount(p.oldprice, p.price);
+
+    let thumbsHTML = images.map((img, i) =>
+      `<img src="${img}" class="thumb ${i===0?'active-thumb':''}"
+        onclick="changeMain('${img}', this)" alt="image ${i+1}">`
+    ).join("");
+
+    document.getElementById("productDetailContainer").innerHTML = `
+      <div class="pd-left" style="animation:fadeInUp 0.5s ease both;">
+        <div class="main-img-wrap">
+          <img src="${images[0] || ''}" id="mainProductImage" class="main-product-img" alt="${p.title}">
+          ${discount ? `<span class="badge-discount big-badge">${discount}</span>` : ""}
+        </div>
+        <div class="thumb-row">${thumbsHTML}</div>
+      </div>
+
+      <div class="pd-right" style="animation:fadeInUp 0.5s ease 0.1s both;">
+        <div class="pd-category">${p.category || 'Fashion'}</div>
+        <h1 class="pd-title">${p.title || ''}</h1>
+
+        <div class="pd-price-row">
+          <span class="pd-price">₹${p.price || 0}</span>
+          ${p.oldprice ? `<span class="pd-old-price">₹${p.oldprice}</span>` : ""}
+          ${discount ? `<span class="pd-discount">${discount}</span>` : ""}
+        </div>
+
+        <div class="pd-divider"></div>
+
+        <p class="pd-description">${p.description || 'Premium quality product from Fashion Empire.'}</p>
+
+        <div class="pd-divider"></div>
+
+        <div class="pd-info-row">
+          <div class="pd-info-item"><i class="fa-solid fa-truck-fast"></i><span>Fast Delivery</span></div>
+          <div class="pd-info-item"><i class="fa-solid fa-shield-heart"></i><span>Trusted Quality</span></div>
+          <div class="pd-info-item"><i class="fa-solid fa-rotate-left"></i><span>Easy Returns</span></div>
+        </div>
+
+        <div class="pd-action-btns">
+          <button class="pd-cart-btn" onclick="addToCartProduct()">
+            <i class="fa-solid fa-cart-plus"></i> Add To Cart
+          </button>
+          <button class="pd-wa-btn" onclick="orderNow()">
+            <i class="fa-brands fa-whatsapp"></i> Order Now
+          </button>
+        </div>
+
+        <a href="index.html" class="pd-back-link">
+          <i class="fa-solid fa-arrow-left"></i> Back to Store
+        </a>
+      </div>`;
+
+    // functions
+    window.changeMain = function(img, el){
+      document.getElementById("mainProductImage").src = img;
+      document.querySelectorAll(".thumb").forEach(t => t.classList.remove("active-thumb"));
+      el.classList.add("active-thumb");
+    };
+
+    window.addToCartProduct = function(){
+      let cartData = JSON.parse(localStorage.getItem("fe_cartTemp") || "[]");
+      let existing = cartData.find(i => i.id === id);
+      if(existing){ existing.qty++; }
+      else { cartData.push({ id, name: p.title, price: p.price, image: p.image1, qty: 1 }); }
+      localStorage.setItem("fe_cartTemp", JSON.stringify(cartData));
+      showToast("🛒 Cart mein add ho gaya! Store pe jaao checkout ke liye.");
+    };
+
+    window.orderNow = function(){
+      let msg = `Hello! Mujhe ye product order karna hai:\n*${p.title}*\nPrice: ₹${p.price}\n\nKripya availability confirm karein.`;
+      window.open(`https://wa.me/919174709695?text=${encodeURIComponent(msg)}`, "_blank");
+    };
+
+  } catch(err){
+    console.error(err);
+    document.getElementById("productDetailContainer").innerHTML =
+      `<p style="color:#e00;padding:30px;">Product load nahi hua. Refresh karein.</p>`;
+  }
+}
+</script>
+</body>
+</html>

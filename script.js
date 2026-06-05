@@ -1,797 +1,349 @@
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-
-import {
-    getFirestore,
-    collection,
-    getDocs
-}
-from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-
-
-/* FIREBASE CONFIG */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
 const firebaseConfig = {
-
-    apiKey: "AIzaSyBw6dKBEDGfuh-he23WHJGG-L6mRDH_lFo",
-
-    authDomain: "fashion-empire-online.firebaseapp.com",
-
-    projectId: "fashion-empire-online",
-
-    storageBucket: "fashion-empire-online.firebasestorage.app",
-
-    messagingSenderId: "270445447440",
-
-    appId: "1:270445447440:web:17b31b34a0bbecbe87bd95"
-
+  apiKey: "AIzaSyBw6dKBEDGfuh-he23WHJGG-L6mRDH_lFo",
+  authDomain: "fashion-empire-online.firebaseapp.com",
+  projectId: "fashion-empire-online",
+  storageBucket: "fashion-empire-online.firebasestorage.app",
+  messagingSenderId: "270445447440",
+  appId: "1:270445447440:web:17b31b34a0bbecbe87bd95"
 };
-
-
-/* FIREBASE START */
 
 const app = initializeApp(firebaseConfig);
-
 const db = getFirestore(app);
-
-
-/* GLOBAL CART */
+const auth = getAuth(app);
 
 let cart = [];
-
-/* GLOBAL WISHLIST */
-
 let wishlist = [];
-
-/* PRODUCT STORAGE */
-
 let allProducts = {};
 
-
-/* AUTO DISCOUNT */
-
-function calculateDiscount(oldPrice, price){
-
-    if(!oldPrice || !price) return "";
-
-    let discount =
-    Math.round(
-        ((oldPrice - price) / oldPrice) * 100
-    );
-
-    return `${discount}% OFF`;
-
+/* ============================
+   TOAST
+============================ */
+function showToast(msg){
+  let t = document.getElementById("toast");
+  if(!t) return;
+  t.innerText = msg;
+  t.classList.add("show");
+  setTimeout(()=> t.classList.remove("show"), 2500);
 }
 
+/* ============================
+   DISCOUNT CALC
+============================ */
+function calculateDiscount(oldPrice, price){
+  if(!oldPrice || !price) return "";
+  return Math.round(((oldPrice - price) / oldPrice) * 100) + "% OFF";
+}
 
-/* FIREBASE PRODUCTS LOAD */
+/* ============================
+   SKELETON LOADER
+============================ */
+function showSkeletons(){
+  let container = document.getElementById("products");
+  if(!container) return;
+  container.innerHTML = Array(8).fill(`
+    <div class="card skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line short"></div>
+      <div class="skeleton-line short"></div>
+    </div>`).join("");
+}
 
-async function loadFirebaseProducts() {
+/* ============================
+   FIREBASE LOAD PRODUCTS
+============================ */
+async function loadFirebaseProducts(){
+  showSkeletons();
+  try {
+    const querySnapshot = await getDocs(collection(db, "products"));
+    let container = document.getElementById("products");
+    if(!container) return;
+    container.innerHTML = "";
 
-    try {
-
-        const querySnapshot = await getDocs(
-            collection(db, "products")
-        );
-
-        let container =
-        document.getElementById("products");
-
-        container.innerHTML = "";
-
-        querySnapshot.forEach((doc) => {
-
-            let product = doc.data();
-
-            allProducts[doc.id || product.title] = product;
-
-            container.innerHTML += `
-
-            <div class="card"
-            data-category="${(product.category || 'all').toLowerCase()}">
-
-                <div class="image">
-
-                    <img src="${product.image1 || ''}">
-
-                </div>
-
-                <div class="info">
-
-                    <h3>${product.title || 'Product'}</h3>
-
-                    <p class="description"
-                    style="display:none;">
-                    ${product.description || ""}
-                    </p>
-
-                    <div class="price">
-
-                        <span class="new">
-                            ₹${product.price || 0}
-                        </span>
-
-                        <span class="old">
-                            ₹${product.oldprice || ""}
-                        </span>
-
-                        <span class="discount">
-                            ${calculateDiscount(product.oldprice, product.price)}
-                        </span>
-
-                    </div>
-
-                    <div class="rating">
-                        ⭐⭐⭐⭐⭐ 4.8
-                    </div>
-
-                    <div class="card-buttons">
-
-                        <button class="cart-btn"
-                        onclick="addToCart(
-                        '${product.title || ''}',
-                        ${product.price || 0},
-                        '${product.image1 || ''}'
-                        )">
-
-                            Add To Cart
-
-                        </button>
-
-                        <button class="view-btn"
-                        onclick="viewProductByIndex('${doc.id || product.title}')">
-
-                            View Product
-
-                        </button>
-
-                    </div>
-
-                    <button class="whatsapp-btn"
-                    onclick="orderWhatsApp('${product.title || ''}')">
-
-                        <i class="fa-brands fa-whatsapp"></i>
-
-                        Order On WhatsApp
-
-                    </button>
-
-                </div>
-
-            </div>
-
-            `;
-
-        });
-
-    } catch (error) {
-
-        console.log("Firebase Error:", error);
-
+    if(querySnapshot.empty){
+      container.innerHTML = `<p style="padding:20px;color:#888;grid-column:1/-1;text-align:center;">Koi products nahi mile.</p>`;
+      return;
     }
 
-}
+    querySnapshot.forEach((doc) => {
+      let p = doc.data();
+      allProducts[doc.id] = p;
+      let discount = calculateDiscount(p.oldprice, p.price);
 
+      let card = document.createElement("div");
+      card.className = "card";
+      card.dataset.category = (p.category || "all").toLowerCase();
+      card.dataset.price = p.price || 0;
+      card.dataset.id = doc.id;
+      card.style.animation = "fadeInUp 0.5s ease both";
+
+      card.innerHTML = `
+        <div class="image">
+          <img src="${p.image1 || ''}" alt="${p.title || 'Product'}" loading="lazy">
+          ${discount ? `<span class="badge-discount">${discount}</span>` : ""}
+          <button class="wishlist-card-btn" onclick="toggleWishlist('${doc.id}')" id="wbtn-${doc.id}">
+            <i class="fa-regular fa-heart"></i>
+          </button>
+        </div>
+        <div class="info">
+          <h3>${p.title || 'Product'}</h3>
+          <div class="price">
+            <span class="new">₹${p.price || 0}</span>
+            ${p.oldprice ? `<span class="old">₹${p.oldprice}</span>` : ""}
+          </div>
+          <div class="card-buttons">
+            <button class="cart-btn" onclick="addToCart('${doc.id}')">
+              <i class="fa-solid fa-cart-plus"></i> Add To Cart
+            </button>
+            <button class="view-btn" onclick="window.location.href='product.html?id=${doc.id}'">
+              <i class="fa-solid fa-eye"></i> View
+            </button>
+          </div>
+          <button class="whatsapp-btn" onclick="orderWhatsApp('${(p.title||'').replace(/'/g,"\\'")}')">
+            <i class="fa-brands fa-whatsapp"></i> Order On WhatsApp
+          </button>
+        </div>`;
+
+      container.appendChild(card);
+    });
+
+  } catch(err){
+    console.error("Firebase Error:", err);
+    let c = document.getElementById("products");
+    if(c) c.innerHTML = `<p style="padding:20px;color:#e00;grid-column:1/-1;text-align:center;">Products load nahi hue. Refresh karein.</p>`;
+  }
+}
 loadFirebaseProducts();
 
-
-/* VIEW PRODUCT */
-
-window.viewProductByIndex = function(id){
-
-    let product = allProducts[id];
-
-    if(!product) return;
-
-    viewProduct(
-        product.title || "",
-        product.price || 0,
-        product.image1 || "",
-        product.image2 || "",
-        product.image3 || "",
-        product.image4 || "",
-        product.image5 || "",
-        product.description || ""
-    );
-
+/* ============================
+   CART
+============================ */
+window.addToCart = function(id){
+  let p = allProducts[id];
+  if(!p) return;
+  let existing = cart.find(i => i.id === id);
+  if(existing){ existing.qty++; }
+  else { cart.push({ id, name: p.title, price: p.price, image: p.image1, qty: 1 }); }
+  renderCart();
+  updateBadges();
+  showToast("🛒 Cart mein add ho gaya!");
 };
 
-
-/* CATEGORY FILTER */
-
-window.filterCategory = function (category) {
-
-    category = category.toLowerCase();
-
-    document.getElementById("searchInput").value = "";
-
-    let cards =
-    document.querySelectorAll(".card");
-
-    cards.forEach(card => {
-
-        if (category === "all") {
-
-            card.style.display = "block";
-            return;
-
-        }
-
-        if (card.dataset.category === category) {
-
-            card.style.display = "block";
-
-        } else {
-
-            card.style.display = "none";
-
-        }
-
-    });
-
+window.increaseQty = function(id){
+  let item = cart.find(i => i.id === id);
+  if(item){ item.qty++; renderCart(); updateBadges(); }
 };
 
-
-/* ADD TO CART */
-
-window.addToCart = function (name, price, image) {
-
-    let existing =
-    cart.find(item => item.name === name);
-
-    if(existing){
-
-        existing.qty += 1;
-
-    }else{
-
-        cart.push({
-            name,
-            price,
-            image,
-            qty:1
-        });
-
-    }
-
-    renderCart();
-
-    openCart();
-
+window.decreaseQty = function(id){
+  let idx = cart.findIndex(i => i.id === id);
+  if(idx === -1) return;
+  if(cart[idx].qty > 1){ cart[idx].qty--; }
+  else { cart.splice(idx, 1); }
+  renderCart();
+  updateBadges();
 };
 
+window.removeItem = function(id){
+  cart = cart.filter(i => i.id !== id);
+  renderCart();
+  updateBadges();
+  showToast("🗑️ Item remove ho gaya");
+};
 
-/* RENDER CART */
+function renderCart(){
+  let cartItems = document.getElementById("cart-items");
+  let cartFooter = document.getElementById("cart-footer");
+  if(!cartItems) return;
+  cartItems.innerHTML = "";
 
-function renderCart() {
+  if(cart.length === 0){
+    cartItems.innerHTML = "<p class='empty-msg'>🛒 Cart is empty</p>";
+    if(cartFooter) cartFooter.style.display = "none";
+    return;
+  }
 
-    let cartItems =
-    document.getElementById("cart-items");
-
-    cartItems.innerHTML = "";
-
-    if (cart.length === 0) {
-
-        cartItems.innerHTML =
-        "<p>Your cart is empty</p>";
-
-        return;
-
-    }
-
-    cart.forEach((item, index) => {
-
-        cartItems.innerHTML += `
-
-        <div class="cart-item"
-        style="
-        display:flex;
-        gap:12px;
-        margin-bottom:18px;
-        align-items:center;
-        background:#f7f7f7;
-        padding:10px;
-        border-radius:16px;
-        ">
-
-            <img
-            src="${item.image}"
-            style="
-            width:70px;
-            height:70px;
-            object-fit:cover;
-            border-radius:12px;
-            ">
-
-            <div style="flex:1;">
-
-                <h4>${item.name}</h4>
-
-                <p>₹${item.price}</p>
-
-                <div style="
-                display:flex;
-                align-items:center;
-                gap:8px;
-                ">
-
-                    <button
-                    onclick="decreaseQty(${index})">
-                    -
-                    </button>
-
-                    <span>${item.qty}</span>
-
-                    <button
-                    onclick="increaseQty(${index})">
-                    +
-                    </button>
-
-                </div>
-
-            </div>
-
+  let total = 0;
+  cart.forEach(item => {
+    total += item.price * item.qty;
+    cartItems.innerHTML += `
+    <div class="cart-item">
+      <img src="${item.image}" alt="${item.name}">
+      <div class="cart-item-info">
+        <h4>${item.name}</h4>
+        <p class="cart-item-price">₹${item.price}</p>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="decreaseQty('${item.id}')">−</button>
+          <span>${item.qty}</span>
+          <button class="qty-btn" onclick="increaseQty('${item.id}')">+</button>
+          <button class="remove-btn" onclick="removeItem('${item.id}')">
+            <i class="fa-solid fa-trash"></i>
+          </button>
         </div>
+      </div>
+    </div>`;
+  });
 
-        `;
-
-    });
-
+  document.getElementById("cart-total-price").innerText = `₹${total}`;
+  if(cartFooter) cartFooter.style.display = "block";
 }
 
-
-/* INCREASE QTY */
-
-window.increaseQty = function(index){
-
-    cart[index].qty++;
-
-    renderCart();
-
-}
-
-
-/* DECREASE QTY */
-
-window.decreaseQty = function(index){
-
-    if(cart[index].qty > 1){
-
-        cart[index].qty--;
-
-    }else{
-
-        cart.splice(index,1);
-
-    }
-
-    renderCart();
-
-}
-
-
-/* LIVE SEARCH */
-
-window.searchProducts = function () {
-
-let search =
-document.getElementById("searchInput")
-.value
-.toLowerCase()
-.trim();
-
-let cards =
-document.querySelectorAll(".card");
-
-cards.forEach(card => {
-
-let title =
-card.querySelector("h3")
-?.innerText
-.toLowerCase() || "";
-
-let description =
-card.querySelector(".description")
-?.innerText
-.toLowerCase() || "";
-
-if(
-title.includes(search) ||
-description.includes(search)
-){
-
-card.style.display = "block";
-
-}else{
-
-card.style.display = "none";
-
-}
-
-});
-
-}
-
-
-/* REMOVE CART ITEM */
-
-window.removeItem = function (index) {
-
-    cart.splice(index, 1);
-
-    renderCart();
-
+window.checkoutWhatsApp = function(){
+  let phone = "919174709695";
+  let msg = "Hello! Mujhe ye products order karne hain:\n\n";
+  let total = 0;
+  cart.forEach(item => {
+    msg += `• ${item.name} x${item.qty} = ₹${item.price * item.qty}\n`;
+    total += item.price * item.qty;
+  });
+  msg += `\n*Total: ₹${total}*\n\nKripya order confirm karein.`;
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
 };
 
+window.openCart  = () => document.getElementById("cartPopup").classList.add("active");
+window.closeCart = () => document.getElementById("cartPopup").classList.remove("active");
 
-/* OPEN CART */
+/* ============================
+   WISHLIST
+============================ */
+window.toggleWishlist = function(id){
+  let p = allProducts[id];
+  if(!p) return;
+  let idx = wishlist.findIndex(i => i.id === id);
+  let btn = document.getElementById(`wbtn-${id}`);
 
-window.openCart = function () {
-
-    document
-    .getElementById("cartPopup")
-    .classList.add("active");
-
+  if(idx !== -1){
+    wishlist.splice(idx, 1);
+    if(btn) btn.innerHTML = `<i class="fa-regular fa-heart"></i>`;
+    showToast("💔 Wishlist se hata diya");
+  } else {
+    wishlist.push({ id, title: p.title, price: p.price, image: p.image1 });
+    if(btn) btn.innerHTML = `<i class="fa-solid fa-heart" style="color:#ff416c;"></i>`;
+    showToast("❤️ Wishlist mein add ho gaya!");
+  }
+  renderWishlist();
+  updateBadges();
 };
 
-
-/* CLOSE CART */
-
-window.closeCart = function () {
-
-    document
-    .getElementById("cartPopup")
-    .classList.remove("active");
-
+window.removeWishlist = function(id){
+  wishlist = wishlist.filter(i => i.id !== id);
+  let btn = document.getElementById(`wbtn-${id}`);
+  if(btn) btn.innerHTML = `<i class="fa-regular fa-heart"></i>`;
+  renderWishlist();
+  updateBadges();
+  showToast("💔 Wishlist se hata diya");
 };
-
-
-/* WISHLIST SYSTEM */
-
-window.toggleWishlist = function(
-    title,
-    price,
-    image
-){
-
-    let existing =
-    wishlist.find(item => item.title === title);
-
-    if(existing){
-
-        wishlist =
-        wishlist.filter(
-            item => item.title !== title
-        );
-
-    } else {
-
-        wishlist.push({
-            title,
-            price,
-            image
-        });
-
-    }
-
-    renderWishlist();
-
-    /* HEART ICON UPDATE */
-
-    let heartIcon =
-    document.querySelector(".wishlist-popup-btn i");
-
-    if(heartIcon){
-
-        let found =
-        wishlist.find(item => item.title === title);
-
-        if(found){
-
-            heartIcon.classList.remove("fa-regular");
-            heartIcon.classList.add("fa-solid");
-
-        }else{
-
-            heartIcon.classList.remove("fa-solid");
-            heartIcon.classList.add("fa-regular");
-
-        }
-
-    }
-
-}
-
-/* RENDER WISHLIST */
 
 function renderWishlist(){
-
-    let wishlistItems =
-    document.getElementById("wishlist-items");
-
-    if(!wishlistItems) return;
-
-    wishlistItems.innerHTML = "";
-
-    if(wishlist.length === 0){
-
-        wishlistItems.innerHTML =
-        "<p style='padding:20px;'>Wishlist is empty</p>";
-
-        return;
-
-    }
-
-    wishlist.forEach((item,index)=>{
-
-        wishlistItems.innerHTML += `
-
-        <div class="wishlist-item"
-        style="
-        display:flex;
-        align-items:center;
-        gap:15px;
-        padding:15px;
-        border-bottom:1px solid #eee;
-        ">
-
-            <img src="${item.image}"
-            style="
-            width:70px;
-            height:70px;
-            object-fit:cover;
-            border-radius:12px;
-            ">
-
-            <div style="flex:1;">
-
-                <h4>${item.title}</h4>
-
-                <p>₹${item.price}</p>
-
-            </div>
-
-            <button
-            onclick="removeWishlist(${index})">
-
-                Remove
-
-            </button>
-
+  let el = document.getElementById("wishlist-items");
+  if(!el) return;
+  el.innerHTML = "";
+  if(wishlist.length === 0){
+    el.innerHTML = "<p class='empty-msg'>💔 Wishlist is empty</p>";
+    return;
+  }
+  wishlist.forEach(item => {
+    el.innerHTML += `
+    <div class="cart-item">
+      <img src="${item.image}" alt="${item.title}">
+      <div class="cart-item-info">
+        <h4>${item.title}</h4>
+        <p class="cart-item-price">₹${item.price}</p>
+        <div class="qty-row">
+          <button class="cart-btn" style="padding:8px 12px;font-size:12px;" onclick="addToCart('${item.id}'); closeWishlist(); openCart();">
+            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+          </button>
+          <button class="remove-btn" onclick="removeWishlist('${item.id}')">
+            <i class="fa-solid fa-trash"></i>
+          </button>
         </div>
-
-        `;
-
-    });
-
+      </div>
+    </div>`;
+  });
 }
 
+window.openWishlist  = () => document.getElementById("wishlistPopup").classList.add("active");
+window.closeWishlist = () => document.getElementById("wishlistPopup").classList.remove("active");
 
-/* REMOVE WISHLIST */
-
-window.removeWishlist = function(index){
-
-    wishlist.splice(index,1);
-
-    renderWishlist();
-
+/* ============================
+   BADGES
+============================ */
+function updateBadges(){
+  let cartCount = cart.reduce((s,i)=> s + i.qty, 0);
+  let wishCount = wishlist.length;
+  let cb = document.getElementById("cartBadge");
+  let wb = document.getElementById("wishlistBadge");
+  if(cb){ cb.innerText = cartCount; cb.style.display = cartCount > 0 ? "flex" : "none"; }
+  if(wb){ wb.innerText = wishCount; wb.style.display = wishCount > 0 ? "flex" : "none"; }
 }
 
-
-/* OPEN WISHLIST */
-
-window.openWishlist = function(){
-
-    document
-    .getElementById("wishlistPopup")
-    .classList.add("active");
-
-}
-
-
-/* CLOSE WISHLIST */
-
-window.closeWishlist = function(){
-
-    document
-    .getElementById("wishlistPopup")
-    .classList.remove("active");
-
-}
-
-
-/* WHATSAPP ORDER */
-
-window.orderWhatsApp = function (product) {
-
-    let phone = "919174709695";
-
-    let message =
-    `Hello I want to order ${product}`;
-
-    window.open(
-        `https://wa.me/${phone}?text=${encodeURIComponent(message)}`,
-        "_blank"
-    );
-
+/* ============================
+   CATEGORY FILTER
+============================ */
+window.filterCategory = function(category, el){
+  category = category.toLowerCase();
+  document.getElementById("searchInput").value = "";
+  document.querySelectorAll(".category").forEach(c => c.classList.remove("active-cat"));
+  if(el) el.classList.add("active-cat");
+  document.querySelectorAll(".card").forEach(card => {
+    card.style.display = (category === "all" || card.dataset.category === category) ? "block" : "none";
+  });
 };
 
-
-/* PRODUCT POPUP */
-
-window.viewProduct = function (
-    product,
-    price,
-    image1,
-    image2,
-    image3,
-    image4,
-    image5,
-    description
-) {
-
-    let oldModal = document.querySelector(".product-modal");
-
-    if(oldModal){
-
-        oldModal.remove();
-
-    }
-
-    let modal =
-    document.createElement("div");
-
-    modal.classList.add("product-modal");
-
-    modal.innerHTML = `
-
-    <div class="product-modal-overlay">
-
-        <div class="modal-content">
-
-            <span class="close-modal"
-            onclick="closeModal()">
-
-                ✕
-
-            </span>
-
-            <div class="modal-left">
-
-                <img src="${image1}"
-                class="main-popup-image"
-                id="mainPopupImage">
-
-                <div class="gallery-row">
-
-                    ${image1 ? `<img src="${image1}" onclick="changeMainImage('${image1}')">` : ""}
-                    ${image2 ? `<img src="${image2}" onclick="changeMainImage('${image2}')">` : ""}
-                    ${image3 ? `<img src="${image3}" onclick="changeMainImage('${image3}')">` : ""}
-                    ${image4 ? `<img src="${image4}" onclick="changeMainImage('${image4}')">` : ""}
-                    ${image5 ? `<img src="${image5}" onclick="changeMainImage('${image5}')">` : ""}
-
-                </div>
-
-            </div>
-
-            <div class="modal-right">
-
-                <!-- WISHLIST BUTTON -->
-
-                <div style="
-                display:flex;
-                justify-content:flex-end;
-                margin-bottom:15px;
-                ">
-
-                    <button
-                    class="wishlist-popup-btn"
-                    onclick="toggleWishlist(
-                    \`${product}\`,
-                    \`${price}\`,
-                    \`${image1}\`
-                    )"
-                    style="
-                    width:50px;
-                    height:50px;
-                    border:none;
-                    border-radius:50%;
-                    background:#f3f3f3;
-                    font-size:20px;
-                    cursor:pointer;
-                    ">
-
-                        <i class="${
-wishlist.find(item => item.title === product)
-? 'fa-solid'
-: 'fa-regular'
-} fa-heart"></i>
-
-                    </button>
-
-                </div>
-
-                <h2 class="modal-title">
-
-                    ${product}
-
-                </h2>
-
-                <p class="modal-price">
-
-                    ₹${price}
-
-                </p>
-
-                <p class="modal-description">
-
-                    ${description}
-
-                </p>
-
-                <div class="modal-buttons">
-
-                    <button class="modal-cart-btn"
-                    onclick="addToCart(
-                    '${product}',
-                    ${price},
-                    '${image1}'
-                    )">
-
-                        Add To Cart
-
-                    </button>
-
-                    <button class="modal-whatsapp-btn"
-                    onclick="orderWhatsApp('${product}')">
-
-                        Order Now
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    `;
-
-    document.body.appendChild(modal);
-
+/* ============================
+   LIVE SEARCH
+============================ */
+window.searchProducts = function(){
+  let search = document.getElementById("searchInput").value.toLowerCase().trim();
+  document.querySelectorAll(".card").forEach(card => {
+    let title = card.querySelector("h3")?.innerText.toLowerCase() || "";
+    card.style.display = title.includes(search) ? "block" : "none";
+  });
 };
 
+/* ============================
+   SORT
+============================ */
+window.sortProducts = function(){
+  let val = document.getElementById("sortSelect").value;
+  let container = document.getElementById("products");
+  let cards = [...document.querySelectorAll(".card")];
 
-/* CHANGE IMAGE */
+  cards.sort((a,b)=>{
+    let pa = parseFloat(a.dataset.price || 0);
+    let pb = parseFloat(b.dataset.price || 0);
+    if(val === "low") return pa - pb;
+    if(val === "high") return pb - pa;
+    return 0;
+  });
 
-window.changeMainImage = function(image){
-
-    document
-    .getElementById("mainPopupImage")
-    .src = image;
-
-}
-
-
-/* CLOSE MODAL */
-
-window.closeModal = function () {
-
-    let modal =
-    document.querySelector(".product-modal");
-
-    if (modal) {
-
-        modal.remove();
-
-    }
-
+  cards.forEach(c => container.appendChild(c));
+  showToast("✅ Products sort ho gaye!");
 };
 
+/* ============================
+   WHATSAPP SINGLE
+============================ */
+window.orderWhatsApp = function(product){
+  let msg = `Hello! Mujhe ye product order karna hai: *${product}*\n\nKripya price aur availability batayein.`;
+  window.open(`https://wa.me/919174709695?text=${encodeURIComponent(msg)}`, "_blank");
+};
 
-/* INITIAL RENDER */
+/* ============================
+   LOGOUT
+============================ */
+window.logoutUser = function(){
+  signOut(auth).then(()=>{
+    localStorage.removeItem("fe_userName");
+    localStorage.removeItem("fe_userEmail");
+    showToast("👋 Logout ho gaye!");
+    setTimeout(()=>{ window.location.href = "login.html"; }, 1200);
+  }).catch(err => console.log(err));
+};
 
+/* INIT */
 renderCart();
 renderWishlist();

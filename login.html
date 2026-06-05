@@ -1,46 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>Login</title>
-
-<link rel="stylesheet"
-href="style.css">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | Fashion Empire</title>
+<link rel="stylesheet" href="style.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-
 <body class="auth-page">
 
-<div class="auth-box">
+<div class="auth-box" style="animation:fadeInUp 0.5s ease both;">
+  <div class="auth-logo">
+    <i class="fa-solid fa-crown"></i> FASHION EMPIRE
+  </div>
+  <h2>Welcome Back 👋</h2>
+  <p class="auth-sub">Apne account mein login karein</p>
 
-<h2>Welcome Back</h2>
+  <div class="input-group">
+    <i class="fa-solid fa-envelope"></i>
+    <input type="email" id="loginEmail" placeholder="Enter Email">
+  </div>
+  <div class="input-group">
+    <i class="fa-solid fa-lock"></i>
+    <input type="password" id="loginPassword" placeholder="Enter Password">
+  </div>
 
-<input type="email"
-placeholder="Enter Email">
+  <p id="loginError" class="auth-error" style="display:none;"></p>
 
-<input type="password"
-placeholder="Enter Password">
+  <button class="auth-btn" onclick="loginUser()">
+    <span id="loginBtnText">Login</span>
+  </button>
 
-<button>
-Login
-</button>
-
-<p>
-
-Don't have account?
-
-<a href="signup.html">
-Create Account
-</a>
-
-</p>
-
+  <p class="auth-link">Account nahi hai? <a href="signup.html">Create Account</a></p>
+  <p class="auth-link"><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Store</a></p>
 </div>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyBw6dKBEDGfuh-he23WHJGG-L6mRDH_lFo",
+  authDomain: "fashion-empire-online.firebaseapp.com",
+  projectId: "fashion-empire-online",
+  storageBucket: "fashion-empire-online.firebasestorage.app",
+  messagingSenderId: "270445447440",
+  appId: "1:270445447440:web:17b31b34a0bbecbe87bd95"
+});
+const auth = getAuth(app);
+
+window.loginUser = async function(){
+  let email    = document.getElementById("loginEmail").value.trim();
+  let password = document.getElementById("loginPassword").value;
+  let errEl    = document.getElementById("loginError");
+  let btn      = document.getElementById("loginBtnText");
+
+  errEl.style.display = "none";
+  if(!email || !password){
+    errEl.innerText = "Email aur password dono bharo.";
+    errEl.style.display = "block"; return;
+  }
+
+  btn.innerText = "Logging in...";
+  try {
+    let userCred = await signInWithEmailAndPassword(auth, email, password);
+    localStorage.setItem("fe_userName",  userCred.user.displayName || "User");
+    localStorage.setItem("fe_userEmail", userCred.user.email);
+    window.location.href = "index.html";
+  } catch(err){
+    btn.innerText = "Login";
+    let msgs = {
+      "auth/user-not-found":    "Email registered nahi hai.",
+      "auth/wrong-password":    "Password galat hai.",
+      "auth/invalid-email":     "Email format sahi nahi hai.",
+      "auth/too-many-requests": "Bahut zyada attempts. Thodi der baad try karein.",
+      "auth/invalid-credential":"Email ya password galat hai."
+    };
+    errEl.innerText = msgs[err.code] || "Login failed. Try again.";
+    errEl.style.display = "block";
+  }
+};
+
+// Enter key support
+document.addEventListener("keydown", e => { if(e.key === "Enter") loginUser(); });
+</script>
 </body>
 </html>
