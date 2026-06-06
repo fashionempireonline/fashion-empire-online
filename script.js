@@ -11,13 +11,22 @@ const firebaseConfig = {
   appId: "1:270445447440:web:17b31b34a0bbecbe87bd95"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app  = initializeApp(firebaseConfig);
+const db   = getFirestore(app);
 const auth = getAuth(app);
 
-let cart = [];
-let wishlist = [];
+/* ============================
+   CART & WISHLIST — localStorage se load
+============================ */
+let cart     = JSON.parse(localStorage.getItem("fe_cart")     || "[]");
+let wishlist = JSON.parse(localStorage.getItem("fe_wishlist") || "[]");
 let allProducts = {};
+
+/* ============================
+   SAVE TO LOCALSTORAGE
+============================ */
+function saveCart()    { localStorage.setItem("fe_cart",     JSON.stringify(cart));     }
+function saveWishlist(){ localStorage.setItem("fe_wishlist", JSON.stringify(wishlist));  }
 
 /* ============================
    TOAST
@@ -29,6 +38,7 @@ function showToast(msg){
   t.classList.add("show");
   setTimeout(()=> t.classList.remove("show"), 2500);
 }
+window.showToast = showToast;
 
 /* ============================
    DISCOUNT CALC
@@ -42,9 +52,9 @@ function calculateDiscount(oldPrice, price){
    SKELETON LOADER
 ============================ */
 function showSkeletons(){
-  let container = document.getElementById("products");
-  if(!container) return;
-  container.innerHTML = Array(8).fill(`
+  let c = document.getElementById("products");
+  if(!c) return;
+  c.innerHTML = Array(8).fill(`
     <div class="card skeleton-card">
       <div class="skeleton-img"></div>
       <div class="skeleton-line"></div>
@@ -54,70 +64,200 @@ function showSkeletons(){
 }
 
 /* ============================
-   FIREBASE LOAD PRODUCTS
+   BUILD CARD
+============================ */
+function buildCard(docId, p){
+  let discount  = calculateDiscount(p.oldprice, p.price);
+  let inWish    = wishlist.find(i => i.id === docId);
+  let card      = document.createElement("div");
+  card.className     = "card";
+  card.dataset.category = (p.category || "all").toLowerCase();
+  card.dataset.price    = p.price || 0;
+  card.dataset.id       = docId;
+  card.style.animation  = "fadeInUp 0.5s ease both";
+  card.innerHTML = `
+    <div class="image">
+      <img src="${p.image1||''}" alt="${p.title||'Product'}" loading="lazy">
+      ${discount ? `<span class="badge-discount">${discount}</span>` : ""}
+      <button class="wishlist-card-btn" onclick="toggleWishlist('${docId}')" id="wbtn-${docId}">
+        <i class="${inWish ? 'fa-solid' : 'fa-regular'} fa-heart" ${inWish ? 'style="color:#ff416c;"' : ''}></i>
+      </button>
+    </div>
+    <div class="info">
+      <h3>${p.title||'Product'}</h3>
+      <div class="price">
+        <span class="new">₹${p.price||0}</span>
+        ${p.oldprice ? `<span class="old">₹${p.oldprice}</span>` : ""}
+      </div>
+      <div class="card-rating" id="rating-${docId}">
+        <span class="stars" style="color:#ddd;">★★★★★</span>
+        <span class="rating-count">loading...</span>
+      </div>
+      <div class="card-buttons">
+        <button class="cart-btn" onclick="addToCart('${docId}')">
+          <i class="fa-solid fa-cart-plus"></i> Add To Cart
+        </button>
+        <button class="view-btn" onclick="window.location.href='product.html?id=${docId}'">
+          <i class="fa-solid fa-eye"></i> View
+        </button>
+      </div>
+      <button class="whatsapp-btn" onclick="orderWhatsApp('${(p.title||'').replace(/'/g,"\\'")}','${docId}')">
+        <i class="fa-brands fa-whatsapp"></i> Order On WhatsApp
+      </button>
+    </div>`;
+  return card;
+}
+
+/* ============================
+   LOAD PRODUCTS
 ============================ */
 async function loadFirebaseProducts(){
   showSkeletons();
   try {
-    const querySnapshot = await getDocs(collection(db, "products"));
+    const snap = await getDocs(collection(db, "products"));
     let container = document.getElementById("products");
     if(!container) return;
     container.innerHTML = "";
 
-    if(querySnapshot.empty){
+    if(snap.empty){
       container.innerHTML = `<p style="padding:20px;color:#888;grid-column:1/-1;text-align:center;">Koi products nahi mile.</p>`;
       return;
     }
 
-    querySnapshot.forEach((doc) => {
-      let p = doc.data();
-      allProducts[doc.id] = p;
-      let discount = calculateDiscount(p.oldprice, p.price);
-
-      let card = document.createElement("div");
-      card.className = "card";
-      card.dataset.category = (p.category || "all").toLowerCase();
-      card.dataset.price = p.price || 0;
-      card.dataset.id = doc.id;
-      card.style.animation = "fadeInUp 0.5s ease both";
-
-      card.innerHTML = `
-        <div class="image">
-          <img src="${p.image1 || ''}" alt="${p.title || 'Product'}" loading="lazy">
-          ${discount ? `<span class="badge-discount">${discount}</span>` : ""}
-          <button class="wishlist-card-btn" onclick="toggleWishlist('${doc.id}')" id="wbtn-${doc.id}">
-            <i class="fa-regular fa-heart"></i>
-          </button>
-        </div>
-        <div class="info">
-          <h3>${p.title || 'Product'}</h3>
-          <div class="price">
-            <span class="new">₹${p.price || 0}</span>
-            ${p.oldprice ? `<span class="old">₹${p.oldprice}</span>` : ""}
-          </div>
-          <div class="card-buttons">
-            <button class="cart-btn" onclick="addToCart('${doc.id}')">
-              <i class="fa-solid fa-cart-plus"></i> Add To Cart
-            </button>
-            <button class="view-btn" onclick="window.location.href='product.html?id=${doc.id}'">
-              <i class="fa-solid fa-eye"></i> View
-            </button>
-          </div>
-          <button class="whatsapp-btn" onclick="orderWhatsApp('${(p.title||'').replace(/'/g,"\\'")}')">
-            <i class="fa-brands fa-whatsapp"></i> Order On WhatsApp
-          </button>
-        </div>`;
-
-      container.appendChild(card);
+    snap.forEach(d => {
+      let p = d.data();
+      allProducts[d.id] = p;
+      container.appendChild(buildCard(d.id, p));
     });
 
+    loadAllRatings();
+    loadRecommended();
   } catch(err){
-    console.error("Firebase Error:", err);
+    console.error(err);
     let c = document.getElementById("products");
     if(c) c.innerHTML = `<p style="padding:20px;color:#e00;grid-column:1/-1;text-align:center;">Products load nahi hue. Refresh karein.</p>`;
   }
 }
 loadFirebaseProducts();
+
+/* ============================
+   RATINGS
+============================ */
+async function loadAllRatings(){
+  try {
+    let snap = await getDocs(collection(db, "reviews"));
+    let ratings = {};
+    snap.forEach(d => {
+      let r = d.data();
+      if(!r.productId || !r.rating) return;
+      if(!ratings[r.productId]) ratings[r.productId] = { sum:0, count:0 };
+      ratings[r.productId].sum   += r.rating;
+      ratings[r.productId].count += 1;
+    });
+
+    Object.keys(ratings).forEach(pid => {
+      let avg   = (ratings[pid].sum / ratings[pid].count).toFixed(1);
+      let count = ratings[pid].count;
+      let el    = document.getElementById(`rating-${pid}`);
+      if(el){
+        let filled = Math.round(avg);
+        let stars  = "★".repeat(filled) + "☆".repeat(5-filled);
+        el.innerHTML = `<span class="stars" style="color:#f5a623;">${stars}</span> <span class="rating-count">${avg} (${count})</span>`;
+      }
+    });
+
+    document.querySelectorAll(".card-rating").forEach(el => {
+      if(el.querySelector(".rating-count")?.innerText === "loading..."){
+        el.innerHTML = `<span class="stars" style="color:#ddd;">★★★★★</span> <span class="rating-count" style="color:#ccc;">No reviews yet</span>`;
+      }
+    });
+  } catch(e){ console.error(e); }
+}
+
+/* ============================
+   RECOMMENDED
+============================ */
+function loadRecommended(){
+  let section = document.getElementById("recommendedSection");
+  if(!section) return;
+
+  let lastCat = localStorage.getItem("fe_lastCategory") || null;
+  let recIds  = [];
+
+  Object.keys(allProducts).forEach(id => {
+    let p = allProducts[id];
+    if(!lastCat || (p.category||"").toLowerCase() === lastCat.toLowerCase()){
+      recIds.push(id);
+    }
+  });
+
+  if(recIds.length < 4){
+    Object.keys(allProducts).forEach(id => {
+      if(!recIds.includes(id)) recIds.push(id);
+    });
+  }
+
+  recIds = recIds.slice(0, 4);
+  if(recIds.length === 0){ section.style.display="none"; return; }
+
+  let wrap = document.getElementById("recommendedGrid");
+  if(!wrap) return;
+  wrap.innerHTML = "";
+  recIds.forEach(id => {
+    let card = buildCard(id, allProducts[id]);
+    wrap.appendChild(card);
+  });
+  section.style.display = "block";
+}
+
+/* ============================
+   ADVANCED FILTER
+============================ */
+window.applyFilters = function(){
+  let minP   = parseFloat(document.getElementById("filterMinPrice")?.value) || 0;
+  let maxP   = parseFloat(document.getElementById("filterMaxPrice")?.value) || Infinity;
+  let selCat = document.getElementById("filterCategory")?.value || "all";
+  let hasDisc= document.getElementById("filterDiscount")?.checked;
+
+  document.querySelectorAll(".card").forEach(card => {
+    let price = parseFloat(card.dataset.price || 0);
+    let cat   = card.dataset.category || "all";
+    let id    = card.dataset.id;
+    let p     = allProducts[id] || {};
+    let hasD  = p.oldprice && p.price && p.oldprice > p.price;
+
+    let show = price >= minP && price <= maxP;
+    if(selCat !== "all" && cat !== selCat) show = false;
+    if(hasDisc && !hasD) show = false;
+
+    card.style.display = show ? "block" : "none";
+  });
+
+  closeFilterPanel();
+  showToast("✅ Filter apply ho gaya!");
+};
+
+window.clearFilters = function(){
+  let fields = ["filterMinPrice","filterMaxPrice","filterCategory","filterDiscount"];
+  fields.forEach(id => {
+    let el = document.getElementById(id);
+    if(!el) return;
+    if(el.type === "checkbox") el.checked = false;
+    else el.value = el.tagName === "SELECT" ? "all" : "";
+  });
+  document.querySelectorAll(".card").forEach(c => c.style.display = "block");
+  closeFilterPanel();
+  showToast("🔄 Filters clear ho gaye!");
+};
+
+window.openFilterPanel  = () => {
+  document.getElementById("filterPanel").classList.add("open");
+  document.getElementById("filterOverlay").classList.add("open");
+};
+window.closeFilterPanel = () => {
+  document.getElementById("filterPanel").classList.remove("open");
+  document.getElementById("filterOverlay").classList.remove("open");
+};
 
 /* ============================
    CART
@@ -128,14 +268,16 @@ window.addToCart = function(id){
   let existing = cart.find(i => i.id === id);
   if(existing){ existing.qty++; }
   else { cart.push({ id, name: p.title, price: p.price, image: p.image1, qty: 1 }); }
+  saveCart();
   renderCart();
   updateBadges();
   showToast("🛒 Cart mein add ho gaya!");
+  localStorage.setItem("fe_lastCategory", (p.category||"").toLowerCase());
 };
 
 window.increaseQty = function(id){
   let item = cart.find(i => i.id === id);
-  if(item){ item.qty++; renderCart(); updateBadges(); }
+  if(item){ item.qty++; saveCart(); renderCart(); updateBadges(); }
 };
 
 window.decreaseQty = function(id){
@@ -143,19 +285,17 @@ window.decreaseQty = function(id){
   if(idx === -1) return;
   if(cart[idx].qty > 1){ cart[idx].qty--; }
   else { cart.splice(idx, 1); }
-  renderCart();
-  updateBadges();
+  saveCart(); renderCart(); updateBadges();
 };
 
 window.removeItem = function(id){
   cart = cart.filter(i => i.id !== id);
-  renderCart();
-  updateBadges();
+  saveCart(); renderCart(); updateBadges();
   showToast("🗑️ Item remove ho gaya");
 };
 
 function renderCart(){
-  let cartItems = document.getElementById("cart-items");
+  let cartItems  = document.getElementById("cart-items");
   let cartFooter = document.getElementById("cart-footer");
   if(!cartItems) return;
   cartItems.innerHTML = "";
@@ -192,7 +332,6 @@ function renderCart(){
 }
 
 window.checkoutWhatsApp = function(){
-  let phone = "919174709695";
   let msg = "Hello! Mujhe ye products order karne hain:\n\n";
   let total = 0;
   cart.forEach(item => {
@@ -200,7 +339,7 @@ window.checkoutWhatsApp = function(){
     total += item.price * item.qty;
   });
   msg += `\n*Total: ₹${total}*\n\nKripya order confirm karein.`;
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+  window.open(`https://wa.me/919174709695?text=${encodeURIComponent(msg)}`, "_blank");
 };
 
 window.openCart  = () => document.getElementById("cartPopup").classList.add("active");
@@ -224,16 +363,14 @@ window.toggleWishlist = function(id){
     if(btn) btn.innerHTML = `<i class="fa-solid fa-heart" style="color:#ff416c;"></i>`;
     showToast("❤️ Wishlist mein add ho gaya!");
   }
-  renderWishlist();
-  updateBadges();
+  saveWishlist(); renderWishlist(); updateBadges();
 };
 
 window.removeWishlist = function(id){
   wishlist = wishlist.filter(i => i.id !== id);
   let btn = document.getElementById(`wbtn-${id}`);
   if(btn) btn.innerHTML = `<i class="fa-regular fa-heart"></i>`;
-  renderWishlist();
-  updateBadges();
+  saveWishlist(); renderWishlist(); updateBadges();
   showToast("💔 Wishlist se hata diya");
 };
 
@@ -241,10 +378,7 @@ function renderWishlist(){
   let el = document.getElementById("wishlist-items");
   if(!el) return;
   el.innerHTML = "";
-  if(wishlist.length === 0){
-    el.innerHTML = "<p class='empty-msg'>💔 Wishlist is empty</p>";
-    return;
-  }
+  if(wishlist.length === 0){ el.innerHTML = "<p class='empty-msg'>💔 Wishlist is empty</p>"; return; }
   wishlist.forEach(item => {
     el.innerHTML += `
     <div class="cart-item">
@@ -253,7 +387,8 @@ function renderWishlist(){
         <h4>${item.title}</h4>
         <p class="cart-item-price">₹${item.price}</p>
         <div class="qty-row">
-          <button class="cart-btn" style="padding:8px 12px;font-size:12px;" onclick="addToCart('${item.id}'); closeWishlist(); openCart();">
+          <button class="cart-btn" style="padding:8px 12px;font-size:12px;"
+            onclick="addToCart('${item.id}'); closeWishlist(); openCart();">
             <i class="fa-solid fa-cart-plus"></i> Add to Cart
           </button>
           <button class="remove-btn" onclick="removeWishlist('${item.id}')">
@@ -272,12 +407,12 @@ window.closeWishlist = () => document.getElementById("wishlistPopup").classList.
    BADGES
 ============================ */
 function updateBadges(){
-  let cartCount = cart.reduce((s,i)=> s + i.qty, 0);
-  let wishCount = wishlist.length;
+  let cc = cart.reduce((s,i)=>s+i.qty, 0);
+  let wc = wishlist.length;
   let cb = document.getElementById("cartBadge");
   let wb = document.getElementById("wishlistBadge");
-  if(cb){ cb.innerText = cartCount; cb.style.display = cartCount > 0 ? "flex" : "none"; }
-  if(wb){ wb.innerText = wishCount; wb.style.display = wishCount > 0 ? "flex" : "none"; }
+  if(cb){ cb.innerText=cc; cb.style.display=cc>0?"flex":"none"; }
+  if(wb){ wb.innerText=wc; wb.style.display=wc>0?"flex":"none"; }
 }
 
 /* ============================
@@ -289,18 +424,19 @@ window.filterCategory = function(category, el){
   document.querySelectorAll(".category").forEach(c => c.classList.remove("active-cat"));
   if(el) el.classList.add("active-cat");
   document.querySelectorAll(".card").forEach(card => {
-    card.style.display = (category === "all" || card.dataset.category === category) ? "block" : "none";
+    card.style.display = (category==="all" || card.dataset.category===category) ? "block" : "none";
   });
+  if(category !== "all") localStorage.setItem("fe_lastCategory", category);
 };
 
 /* ============================
    LIVE SEARCH
 ============================ */
 window.searchProducts = function(){
-  let search = document.getElementById("searchInput").value.toLowerCase().trim();
+  let s = document.getElementById("searchInput").value.toLowerCase().trim();
   document.querySelectorAll(".card").forEach(card => {
-    let title = card.querySelector("h3")?.innerText.toLowerCase() || "";
-    card.style.display = title.includes(search) ? "block" : "none";
+    let t = card.querySelector("h3")?.innerText.toLowerCase()||"";
+    card.style.display = t.includes(s) ? "block" : "none";
   });
 };
 
@@ -308,27 +444,27 @@ window.searchProducts = function(){
    SORT
 ============================ */
 window.sortProducts = function(){
-  let val = document.getElementById("sortSelect").value;
-  let container = document.getElementById("products");
-  let cards = [...document.querySelectorAll(".card")];
-
+  let val  = document.getElementById("sortSelect").value;
+  let cont = document.getElementById("products");
+  let cards= [...document.querySelectorAll("#products .card")];
   cards.sort((a,b)=>{
-    let pa = parseFloat(a.dataset.price || 0);
-    let pb = parseFloat(b.dataset.price || 0);
-    if(val === "low") return pa - pb;
-    if(val === "high") return pb - pa;
+    let pa=parseFloat(a.dataset.price||0), pb=parseFloat(b.dataset.price||0);
+    if(val==="low")  return pa-pb;
+    if(val==="high") return pb-pa;
     return 0;
   });
-
-  cards.forEach(c => container.appendChild(c));
+  cards.forEach(c => cont.appendChild(c));
   showToast("✅ Products sort ho gaye!");
 };
 
 /* ============================
-   WHATSAPP SINGLE
+   WHATSAPP SINGLE — product link bhi bhejo
 ============================ */
-window.orderWhatsApp = function(product){
-  let msg = `Hello! Mujhe ye product order karna hai: *${product}*\n\nKripya price aur availability batayein.`;
+window.orderWhatsApp = function(product, id){
+  let productLink = id
+    ? `${window.location.origin}/product.html?id=${id}`
+    : window.location.href;
+  let msg = `Hello! Mujhe ye product order karna hai:\n\n*${product}*\n\n🔗 Product Link:\n${productLink}\n\nKripya price aur availability batayein.`;
   window.open(`https://wa.me/919174709695?text=${encodeURIComponent(msg)}`, "_blank");
 };
 
@@ -340,10 +476,13 @@ window.logoutUser = function(){
     localStorage.removeItem("fe_userName");
     localStorage.removeItem("fe_userEmail");
     showToast("👋 Logout ho gaye!");
-    setTimeout(()=>{ window.location.href = "login.html"; }, 1200);
-  }).catch(err => console.log(err));
+    setTimeout(()=>{ window.location.href="login.html"; }, 1200);
+  });
 };
 
-/* INIT */
+/* ============================
+   INIT — render saved cart & wishlist
+============================ */
 renderCart();
 renderWishlist();
+updateBadges();
