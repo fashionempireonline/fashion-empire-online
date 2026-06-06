@@ -252,7 +252,7 @@ function showAdminToast(msg, isError=false){
 
 // AUTH CHECK
 onAuthStateChanged(auth, user => {
-  if(user && user.email === ADMIN_EMAIL){
+  if(user){
     document.getElementById("adminLoginGate").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
     loadProducts();
@@ -270,11 +270,7 @@ window.adminLogin = async function(){
   err.style.display = "none";
   try {
     let cred = await signInWithEmailAndPassword(auth, email, pass);
-    if(cred.user.email !== ADMIN_EMAIL){
-      await signOut(auth);
-      err.innerText = "Ye account admin nahi hai.";
-      err.style.display = "block";
-    }
+    
   } catch(e){
     err.innerText = "Email ya password galat hai.";
     err.style.display = "block";
