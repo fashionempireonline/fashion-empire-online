@@ -241,6 +241,7 @@ const auth = getAuth(app);
 
 // ADMIN EMAIL — apna email yahan daalo
 const ADMIN_EMAILS = ["kp1496140@gmail.com", "loothakeryt@gmail.com"];
+
 function showAdminToast(msg, isError=false){
   let t = document.getElementById("adminToast");
   t.innerText = msg;
@@ -433,4 +434,30 @@ async function loadReviews(){
       html += `
       <div style="background:#f9f9f9;border-radius:14px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
         <div>
-          <div style="display:flex;alig
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+            <strong>${r.userName||"Anonymous"}</strong>
+            <span style="font-size:14px;">${stars}</span>
+          </div>
+          <p style="font-size:14px;color:#555;margin-bottom:4px;">${r.comment||""}</p>
+          <small style="color:#aaa;">${r.productTitle||""}</small>
+        </div>
+        <button class="icon-btn del" onclick="deleteReview('${d.id}')" title="Delete">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>`;
+    });
+    document.getElementById("reviewsAdminWrap").innerHTML = snap.empty
+      ? `<p style="color:#aaa;text-align:center;padding:30px;">Koi reviews nahi hain abhi.</p>`
+      : html;
+  } catch(e){ console.error(e); }
+}
+
+window.deleteReview = async function(id){
+  if(!confirm("Is review ko delete karna chahte ho?")) return;
+  await deleteDoc(doc(db, "reviews", id));
+  showAdminToast("🗑️ Review delete ho gaya!");
+  loadReviews();
+};
+</script>
+</body>
+</html>
