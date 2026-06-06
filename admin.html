@@ -4,171 +4,142 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Panel | Fashion Empire</title>
-<link rel="stylesheet" href="style.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-body { background:#f0f2f5; padding:20px; padding-bottom:20px !important; padding-top:20px !important; }
-.admin-wrap { max-width:1100px; margin:auto; }
-.admin-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
-.admin-logo { font-size:22px; font-weight:700; color:#ff416c; display:flex; align-items:center; gap:10px; }
-.admin-logo i { color:#ffcc00; }
-.admin-tabs { display:flex; gap:10px; margin-bottom:24px; flex-wrap:wrap; }
-.admin-tab { padding:10px 22px; border-radius:50px; border:2px solid #eee; background:white; font-family:'Poppins',sans-serif; font-size:14px; font-weight:600; cursor:pointer; transition:0.3s; color:#555; }
-.admin-tab.active { background:linear-gradient(135deg,#ff416c,#ff4b2b); color:white; border-color:transparent; }
-.admin-section { display:none; }
-.admin-section.active { display:block; }
-.admin-card { background:white; border-radius:20px; padding:24px; box-shadow:0 5px 20px rgba(0,0,0,0.07); margin-bottom:20px; }
-.admin-card h3 { font-size:18px; margin-bottom:18px; color:#111; display:flex; align-items:center; gap:10px; }
-.admin-card h3 i { color:#ff416c; }
-.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-@media(max-width:600px){ .form-grid{ grid-template-columns:1fr; } }
-.form-group { display:flex; flex-direction:column; gap:6px; }
-.form-group label { font-size:13px; font-weight:600; color:#555; }
-.form-group input, .form-group select, .form-group textarea {
-  padding:12px 15px; border:2px solid #eee; border-radius:12px;
-  font-family:'Poppins',sans-serif; font-size:14px; outline:none; transition:0.3s; resize:none;
-}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:#ff416c; }
-.form-full { grid-column:1/-1; }
-.admin-btn { padding:13px 28px; background:linear-gradient(135deg,#ff416c,#ff4b2b); color:white; border:none; border-radius:14px; font-size:15px; font-weight:600; cursor:pointer; font-family:'Poppins',sans-serif; transition:0.3s; display:inline-flex; align-items:center; gap:8px; }
-.admin-btn:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(255,65,108,0.3); }
-.admin-btn.secondary { background:#111; }
-.admin-btn.danger { background:#e00; }
-.products-table { width:100%; border-collapse:collapse; }
-.products-table th { text-align:left; padding:12px 14px; font-size:13px; color:#888; border-bottom:2px solid #f0f0f0; }
-.products-table td { padding:13px 14px; font-size:14px; border-bottom:1px solid #f5f5f5; vertical-align:middle; }
-.products-table tr:hover td { background:#fafafa; }
-.prod-img-thumb { width:55px; height:55px; object-fit:cover; border-radius:10px; }
-.prod-title-cell { font-weight:600; max-width:180px; }
-.prod-title-cell small { font-weight:400; color:#aaa; font-size:12px; display:block; }
-.status-badge { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; }
-.status-active { background:#e8f9ee; color:#1a8a1a; }
-.table-actions { display:flex; gap:8px; }
-.icon-btn { width:34px; height:34px; border-radius:10px; border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; transition:0.2s; }
-.icon-btn.edit { background:#fff3e0; color:#e67e00; }
-.icon-btn.del { background:#fff0f0; color:#e00; }
-.icon-btn:hover { transform:scale(1.1); }
-.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:24px; }
-.stat-box { background:white; border-radius:18px; padding:20px; box-shadow:0 5px 20px rgba(0,0,0,0.07); }
-.stat-box .stat-icon { width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:12px; }
-.stat-box h2 { font-size:26px; font-weight:800; margin-bottom:4px; }
-.stat-box p { font-size:13px; color:#888; }
-.stat-red .stat-icon { background:#fff0f3; color:#ff416c; }
-.stat-blue .stat-icon { background:#e8f4ff; color:#0066cc; }
-.stat-green .stat-icon { background:#e8fff2; color:#00a854; }
-.stat-yellow .stat-icon { background:#fffbe8; color:#cc8800; }
-.admin-toast { position:fixed; top:24px; right:24px; background:#111; color:white; padding:14px 24px; border-radius:14px; font-size:14px; font-weight:500; opacity:0; pointer-events:none; transition:0.3s; z-index:99999; box-shadow:0 8px 25px rgba(0,0,0,0.2); }
-.admin-toast.show { opacity:1; }
-.loading-state { text-align:center; padding:40px; color:#aaa; font-size:15px; }
-.loading-state i { font-size:30px; margin-bottom:10px; color:#ff416c; display:block; }
-.edit-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10000; display:flex; align-items:center; justify-content:center; padding:20px; }
-.edit-modal { background:white; border-radius:24px; padding:28px; width:100%; max-width:620px; max-height:90vh; overflow-y:auto; box-shadow:0 25px 60px rgba(0,0,0,0.25); }
-.edit-modal h3 { margin-bottom:20px; font-size:20px; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:#f0f2f5;padding:20px;}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.login-box{background:white;border-radius:24px;padding:36px;max-width:400px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,0.15);}
+.logo{font-size:22px;font-weight:700;color:#ff416c;margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.logo i{color:#ffcc00;}
+h2{margin-bottom:6px;font-size:24px;}
+.sub{color:#888;font-size:14px;margin-bottom:24px;}
+.inp-group{margin-bottom:16px;}
+.inp-group label{display:block;font-size:13px;font-weight:600;color:#555;margin-bottom:6px;}
+.inp-group input{width:100%;padding:13px 16px;border:2px solid #eee;border-radius:14px;font-size:14px;font-family:'Poppins',sans-serif;outline:none;transition:0.3s;}
+.inp-group input:focus{border-color:#ff416c;}
+.err{color:#e00;font-size:13px;background:#fff0f0;padding:10px 14px;border-radius:10px;margin-bottom:14px;border-left:3px solid #e00;display:none;}
+.btn{width:100%;padding:15px;background:linear-gradient(135deg,#ff416c,#ff4b2b);color:white;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:0.3s;}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(255,65,108,0.3);}
+
+/* ADMIN PANEL */
+.admin-wrap{max-width:1100px;margin:auto;display:none;}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;}
+.admin-logo{font-size:22px;font-weight:700;color:#ff416c;display:flex;align-items:center;gap:10px;}
+.admin-logo i{color:#ffcc00;}
+.header-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.admin-btn{padding:12px 22px;background:linear-gradient(135deg,#ff416c,#ff4b2b);color:white;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:0.3s;display:inline-flex;align-items:center;gap:8px;text-decoration:none;}
+.admin-btn.dark{background:#111;}
+.admin-btn.red{background:#e00;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px;}
+.stat-box{background:white;border-radius:18px;padding:20px;box-shadow:0 5px 20px rgba(0,0,0,0.07);}
+.stat-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px;}
+.stat-box h2{font-size:26px;font-weight:800;margin-bottom:4px;}
+.stat-box p{font-size:13px;color:#888;}
+.s1 .stat-icon{background:#fff0f3;color:#ff416c;}
+.s2 .stat-icon{background:#e8f4ff;color:#0066cc;}
+.s3 .stat-icon{background:#e8fff2;color:#00a854;}
+.s4 .stat-icon{background:#fffbe8;color:#cc8800;}
+.tabs{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+.tab{padding:10px 22px;border-radius:50px;border:2px solid #eee;background:white;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:0.3s;color:#555;}
+.tab.active{background:linear-gradient(135deg,#ff416c,#ff4b2b);color:white;border-color:transparent;}
+.section{display:none;}
+.section.active{display:block;}
+.card{background:white;border-radius:20px;padding:24px;box-shadow:0 5px 20px rgba(0,0,0,0.07);margin-bottom:20px;}
+.card h3{font-size:18px;margin-bottom:18px;color:#111;display:flex;align-items:center;gap:10px;}
+.card h3 i{color:#ff416c;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr;}}
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fg label{font-size:13px;font-weight:600;color:#555;}
+.fg input,.fg select,.fg textarea{padding:12px 15px;border:2px solid #eee;border-radius:12px;font-family:'Poppins',sans-serif;font-size:14px;outline:none;transition:0.3s;resize:none;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#ff416c;}
+.full{grid-column:1/-1;}
+.save-btn{padding:13px 28px;background:linear-gradient(135deg,#ff416c,#ff4b2b);color:white;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:0.3s;display:inline-flex;align-items:center;gap:8px;margin-top:16px;}
+.clear-btn{padding:13px 28px;background:#111;color:white;border:none;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:0.3s;display:inline-flex;align-items:center;gap:8px;margin-top:16px;margin-left:10px;}
+table{width:100%;border-collapse:collapse;}
+th{text-align:left;padding:12px 14px;font-size:13px;color:#888;border-bottom:2px solid #f0f0f0;}
+td{padding:13px 14px;font-size:14px;border-bottom:1px solid #f5f5f5;vertical-align:middle;}
+tr:hover td{background:#fafafa;}
+.thumb{width:55px;height:55px;object-fit:cover;border-radius:10px;}
+.badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:#e8f9ee;color:#1a8a1a;}
+.act-btns{display:flex;gap:8px;}
+.icon-btn{width:34px;height:34px;border-radius:10px;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:0.2s;}
+.edit-btn{background:#fff3e0;color:#e67e00;}
+.del-btn{background:#fff0f0;color:#e00;}
+.icon-btn:hover{transform:scale(1.1);}
+.toast{position:fixed;top:24px;right:24px;background:#111;color:white;padding:14px 24px;border-radius:14px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:0.3s;z-index:99999;box-shadow:0 8px 25px rgba(0,0,0,0.2);}
+.toast.show{opacity:1;}
+.loading{text-align:center;padding:40px;color:#aaa;}
+.loading i{font-size:30px;margin-bottom:10px;color:#ff416c;display:block;}
 </style>
 </head>
 <body>
 
-<div id="adminToast" class="admin-toast"></div>
+<div id="toast" class="toast"></div>
 
-<!-- LOGIN GATE -->
-<div id="adminLoginGate" style="display:none; min-height:100vh; display:flex; align-items:center; justify-content:center;">
-  <div style="background:white;border-radius:24px;padding:36px;max-width:380px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,0.15);">
-    <div style="font-size:22px;font-weight:700;color:#ff416c;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
-      <i class="fa-solid fa-crown" style="color:#ffcc00;"></i> Admin Panel
-    </div>
-    <h2 style="margin-bottom:6px;">Admin Login</h2>
-    <p style="color:#888;font-size:14px;margin-bottom:22px;">Sirf authorized admins ke liye</p>
-    <div class="form-group" style="margin-bottom:14px;">
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="logo"><i class="fa-solid fa-crown"></i> Admin Panel</div>
+    <h2>Admin Login</h2>
+    <p class="sub">Fashion Empire — Sirf admins ke liye</p>
+    <div class="inp-group">
       <label>Email</label>
-      <input type="email" id="adminEmail" placeholder="Admin email">
+      <input type="email" id="adminEmail" placeholder="Email daalo" onkeydown="if(event.key==='Enter') doLogin()">
     </div>
-    <div class="form-group" style="margin-bottom:18px;">
+    <div class="inp-group">
       <label>Password</label>
-      <input type="password" id="adminPassword" placeholder="Password">
+      <input type="password" id="adminPassword" placeholder="Password daalo" onkeydown="if(event.key==='Enter') doLogin()">
     </div>
-    <p id="adminLoginErr" style="color:#e00;font-size:13px;margin-bottom:12px;display:none;"></p>
-    <button class="admin-btn" style="width:100%;justify-content:center;" onclick="adminLogin()">
+    <p class="err" id="loginErr"></p>
+    <button class="btn" id="loginBtn" onclick="doLogin()">
       <i class="fa-solid fa-right-to-bracket"></i> Login
     </button>
   </div>
 </div>
 
 <!-- ADMIN PANEL -->
-<div id="adminPanel" style="display:none;">
-<div class="admin-wrap">
-
-  <!-- HEADER -->
+<div class="admin-wrap" id="adminWrap">
   <div class="admin-header">
     <div class="admin-logo"><i class="fa-solid fa-crown"></i> Fashion Empire — Admin</div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <a href="index.html" class="admin-btn secondary" style="text-decoration:none;">
-        <i class="fa-solid fa-store"></i> View Store
-      </a>
-      <button class="admin-btn danger" onclick="adminLogout()">
-        <i class="fa-solid fa-right-from-bracket"></i> Logout
-      </button>
+    <div class="header-btns">
+      <a href="index.html" class="admin-btn dark"><i class="fa-solid fa-store"></i> Store</a>
+      <button class="admin-btn red" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
     </div>
   </div>
 
-  <!-- STATS -->
-  <div class="stats-grid" id="statsGrid">
-    <div class="stat-box stat-red">
-      <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
-      <h2 id="statProducts">—</h2><p>Total Products</p>
-    </div>
-    <div class="stat-box stat-blue">
-      <div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
-      <h2 id="statCategories">—</h2><p>Categories</p>
-    </div>
-    <div class="stat-box stat-green">
-      <div class="stat-icon"><i class="fa-brands fa-whatsapp"></i></div>
-      <h2>WhatsApp</h2><p>Order Mode Active</p>
-    </div>
-    <div class="stat-box stat-yellow">
-      <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
-      <h2 id="statReviews">—</h2><p>Total Reviews</p>
-    </div>
+  <div class="stats-grid">
+    <div class="stat-box s1"><div class="stat-icon"><i class="fa-solid fa-box"></i></div><h2 id="sTotal">—</h2><p>Products</p></div>
+    <div class="stat-box s2"><div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div><h2 id="sCats">—</h2><p>Categories</p></div>
+    <div class="stat-box s3"><div class="stat-icon"><i class="fa-brands fa-whatsapp"></i></div><h2>ON</h2><p>WhatsApp Orders</p></div>
+    <div class="stat-box s4"><div class="stat-icon"><i class="fa-solid fa-star"></i></div><h2 id="sRevs">—</h2><p>Reviews</p></div>
   </div>
 
-  <!-- TABS -->
-  <div class="admin-tabs">
-    <button class="admin-tab active" onclick="switchTab('products')"><i class="fa-solid fa-box"></i> Products</button>
-    <button class="admin-tab" onclick="switchTab('add')"><i class="fa-solid fa-plus"></i> Add Product</button>
-    <button class="admin-tab" onclick="switchTab('reviews')"><i class="fa-solid fa-star"></i> Reviews</button>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('products',this)"><i class="fa-solid fa-box"></i> Products</button>
+    <button class="tab" onclick="switchTab('add',this)"><i class="fa-solid fa-plus"></i> Add Product</button>
+    <button class="tab" onclick="switchTab('reviews',this)"><i class="fa-solid fa-star"></i> Reviews</button>
   </div>
 
-  <!-- PRODUCTS LIST -->
-  <div id="tab-products" class="admin-section active">
-    <div class="admin-card">
+  <div id="sec-products" class="section active">
+    <div class="card">
       <h3><i class="fa-solid fa-list"></i> All Products</h3>
-      <div id="productsTableWrap">
-        <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i>Loading products...</div>
-      </div>
+      <div id="prodWrap"><div class="loading"><i class="fa-solid fa-spinner fa-spin"></i>Loading...</div></div>
     </div>
   </div>
 
-  <!-- ADD PRODUCT -->
-  <div id="tab-add" class="admin-section">
-    <div class="admin-card">
-      <h3><i class="fa-solid fa-plus-circle"></i> <span id="addFormTitle">Add New Product</span></h3>
-      <input type="hidden" id="editProductId">
+  <div id="sec-add" class="section">
+    <div class="card">
+      <h3><i class="fa-solid fa-plus-circle"></i> <span id="formTitle">Add Product</span></h3>
+      <input type="hidden" id="editId">
       <div class="form-grid">
-        <div class="form-group form-full">
-          <label>Product Title *</label>
-          <input type="text" id="pTitle" placeholder="e.g. Premium Denim Jacket">
-        </div>
-        <div class="form-group">
-          <label>Price (₹) *</label>
-          <input type="number" id="pPrice" placeholder="e.g. 1299">
-        </div>
-        <div class="form-group">
-          <label>Old Price (₹) — for discount</label>
-          <input type="number" id="pOldPrice" placeholder="e.g. 1999">
-        </div>
-        <div class="form-group">
-          <label>Category *</label>
-          <select id="pCategory">
+        <div class="fg full"><label>Title *</label><input id="pTitle" placeholder="Product name"></div>
+        <div class="fg"><label>Price ₹ *</label><input type="number" id="pPrice" placeholder="1299"></div>
+        <div class="fg"><label>Old Price ₹</label><input type="number" id="pOldPrice" placeholder="1999"></div>
+        <div class="fg"><label>Category *</label>
+          <select id="pCat">
             <option value="menswear">Menswear</option>
             <option value="womenwear">Womenwear</option>
             <option value="shoes">Shoes</option>
@@ -177,49 +148,23 @@ body { background:#f0f2f5; padding:20px; padding-bottom:20px !important; padding
             <option value="sunglasses">Sunglasses</option>
           </select>
         </div>
-        <div class="form-group">
-          <label>Image 1 URL * (Main)</label>
-          <input type="url" id="pImg1" placeholder="https://...">
-        </div>
-        <div class="form-group">
-          <label>Image 2 URL</label>
-          <input type="url" id="pImg2" placeholder="https://...">
-        </div>
-        <div class="form-group">
-          <label>Image 3 URL</label>
-          <input type="url" id="pImg3" placeholder="https://...">
-        </div>
-        <div class="form-group">
-          <label>Image 4 URL</label>
-          <input type="url" id="pImg4" placeholder="https://...">
-        </div>
-        <div class="form-group form-full">
-          <label>Description</label>
-          <textarea id="pDesc" rows="3" placeholder="Product ke baare mein likho..."></textarea>
-        </div>
+        <div class="fg"><label>Image 1 * (Main)</label><input type="url" id="pImg1" placeholder="https://..."></div>
+        <div class="fg"><label>Image 2</label><input type="url" id="pImg2" placeholder="https://..."></div>
+        <div class="fg"><label>Image 3</label><input type="url" id="pImg3" placeholder="https://..."></div>
+        <div class="fg"><label>Image 4</label><input type="url" id="pImg4" placeholder="https://..."></div>
+        <div class="fg full"><label>Description</label><textarea id="pDesc" rows="3" placeholder="Product details..."></textarea></div>
       </div>
-      <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
-        <button class="admin-btn" onclick="saveProduct()">
-          <i class="fa-solid fa-save"></i> <span id="saveBtnText">Save Product</span>
-        </button>
-        <button class="admin-btn secondary" onclick="clearForm()">
-          <i class="fa-solid fa-xmark"></i> Clear Form
-        </button>
-      </div>
+      <button class="save-btn" onclick="saveProduct()"><i class="fa-solid fa-save"></i> <span id="saveTxt">Save Product</span></button>
+      <button class="clear-btn" onclick="clearForm()"><i class="fa-solid fa-xmark"></i> Clear</button>
     </div>
   </div>
 
-  <!-- REVIEWS -->
-  <div id="tab-reviews" class="admin-section">
-    <div class="admin-card">
-      <h3><i class="fa-solid fa-star"></i> Customer Reviews</h3>
-      <div id="reviewsAdminWrap">
-        <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading reviews...</div>
-      </div>
+  <div id="sec-reviews" class="section">
+    <div class="card">
+      <h3><i class="fa-solid fa-star"></i> Reviews</h3>
+      <div id="revWrap"><div class="loading"><i class="fa-solid fa-spinner fa-spin"></i>Loading...</div></div>
     </div>
   </div>
-
-</div>
 </div>
 
 <script type="module">
@@ -236,224 +181,201 @@ const app = initializeApp({
   appId: "1:270445447440:web:17b31b34a0bbecbe87bd95"
 });
 
-const db = getFirestore(app);
+const db   = getFirestore(app);
 const auth = getAuth(app);
 
-// ADMIN EMAIL — apna email yahan daalo
-const ADMIN_EMAIL = "loothakeryt@gmail.com";
-
-function showAdminToast(msg, isError=false){
-  let t = document.getElementById("adminToast");
+function toast(msg, err=false){
+  let t = document.getElementById("toast");
   t.innerText = msg;
-  t.style.background = isError ? "#e00" : "#111";
+  t.style.background = err ? "#e00" : "#111";
   t.classList.add("show");
   setTimeout(()=> t.classList.remove("show"), 3000);
 }
 
-// AUTH CHECK
+/* ====== AUTH — KOI EMAIL CHECK NAHI ====== */
 onAuthStateChanged(auth, user => {
   if(user){
-    document.getElementById("adminLoginGate").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
+    document.getElementById("loginWrap").style.display = "none";
+    document.getElementById("adminWrap").style.display = "block";
     loadProducts();
     loadReviews();
   } else {
-    document.getElementById("adminLoginGate").style.display = "flex";
-    document.getElementById("adminPanel").style.display = "none";
+    document.getElementById("loginWrap").style.display = "flex";
+    document.getElementById("adminWrap").style.display = "none";
   }
 });
 
-window.adminLogin = async function(){
+window.doLogin = async function(){
   let email = document.getElementById("adminEmail").value.trim();
   let pass  = document.getElementById("adminPassword").value;
-  let err   = document.getElementById("adminLoginErr");
+  let err   = document.getElementById("loginErr");
+  let btn   = document.getElementById("loginBtn");
   err.style.display = "none";
-  try {
-    let cred = await signInWithEmailAndPassword(auth, email, pass);
-    
-  } catch(e){
-    err.innerText = "Email ya password galat hai.";
+
+  if(!email || !pass){
+    err.innerText = "Email aur password dono daalo.";
     err.style.display = "block";
+    return;
+  }
+
+  btn.innerText = "Logging in...";
+  btn.disabled  = true;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e){
+    btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login';
+    btn.disabled  = false;
+    let msgs = {
+      "auth/invalid-credential": "Email ya password galat hai.",
+      "auth/user-not-found":     "Yeh email registered nahi hai.",
+      "auth/wrong-password":     "Password galat hai.",
+      "auth/too-many-requests":  "Bahut zyada attempts. Thodi der baad try karo.",
+      "auth/invalid-email":      "Email format galat hai."
+    };
+    err.innerText      = msgs[e.code] || "Error: " + e.code;
+    err.style.display  = "block";
   }
 };
 
-window.adminLogout = () => signOut(auth);
+window.doLogout = () => signOut(auth);
 
-// TABS
-window.switchTab = function(tab){
-  document.querySelectorAll(".admin-section").forEach(s => s.classList.remove("active"));
-  document.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("active"));
-  document.getElementById(`tab-${tab}`).classList.add("active");
-  event.currentTarget.classList.add("active");
+/* ====== TABS ====== */
+window.switchTab = function(name, el){
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.getElementById("sec-"+name).classList.add("active");
+  el.classList.add("active");
 };
 
-// LOAD PRODUCTS
-let allProductsData = {};
+/* ====== PRODUCTS ====== */
+let allProds = {};
 
 async function loadProducts(){
   try {
-    let snap = await getDocs(collection(db, "products"));
-    allProductsData = {};
-    let rows = "";
-    let cats = new Set();
-
+    let snap = await getDocs(collection(db,"products"));
+    allProds = {};
+    let rows = "", cats = new Set();
     snap.forEach(d => {
       let p = d.data();
-      allProductsData[d.id] = p;
+      allProds[d.id] = p;
       cats.add(p.category);
-      rows += `
-      <tr>
-        <td><img src="${p.image1||''}" class="prod-img-thumb" onerror="this.src='https://via.placeholder.com/55'"></td>
-        <td class="prod-title-cell">${p.title||'—'}<small>${p.category||''}</small></td>
-        <td><strong>₹${p.price||0}</strong>${p.oldprice?`<br><span style="color:#aaa;text-decoration:line-through;font-size:12px;">₹${p.oldprice}</span>`:""}</td>
-        <td><span class="status-badge status-active">Active</span></td>
-        <td>
-          <div class="table-actions">
-            <button class="icon-btn edit" onclick="editProduct('${d.id}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
-            <button class="icon-btn del" onclick="deleteProduct('${d.id}','${(p.title||'').replace(/'/g,"\\'")}')"><i class="fa-solid fa-trash"></i></button>
-          </div>
-        </td>
+      rows += `<tr>
+        <td><img src="${p.image1||''}" class="thumb" onerror="this.src='https://placehold.co/55'"></td>
+        <td><strong>${p.title||'—'}</strong><br><small style="color:#aaa;">${p.category||''}</small></td>
+        <td><strong>₹${p.price||0}</strong>${p.oldprice?`<br><small style="color:#aaa;text-decoration:line-through;">₹${p.oldprice}</small>`:""}</td>
+        <td><span class="badge">Active</span></td>
+        <td><div class="act-btns">
+          <button class="icon-btn edit-btn" onclick="editProd('${d.id}')"><i class="fa-solid fa-pen"></i></button>
+          <button class="icon-btn del-btn" onclick="delProd('${d.id}','${(p.title||'').replace(/'/g,"\\'")}')"><i class="fa-solid fa-trash"></i></button>
+        </div></td>
       </tr>`;
     });
-
-    document.getElementById("statProducts").innerText = snap.size;
-    document.getElementById("statCategories").innerText = cats.size;
-
-    document.getElementById("productsTableWrap").innerHTML = snap.empty
-      ? `<p style="color:#aaa;text-align:center;padding:30px;">Koi products nahi hain. Pehle add karo!</p>`
-      : `<div style="overflow-x:auto;"><table class="products-table">
-          <thead><tr><th>Image</th><th>Title</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table></div>`;
+    document.getElementById("sTotal").innerText = snap.size;
+    document.getElementById("sCats").innerText  = cats.size;
+    document.getElementById("prodWrap").innerHTML = snap.empty
+      ? `<p style="text-align:center;color:#aaa;padding:30px;">Koi products nahi. Add karo!</p>`
+      : `<div style="overflow-x:auto;"><table><thead><tr><th>Image</th><th>Title</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   } catch(e){
-    console.error(e);
-    document.getElementById("productsTableWrap").innerHTML = `<p style="color:#e00;">Error loading products.</p>`;
+    document.getElementById("prodWrap").innerHTML = `<p style="color:#e00;">Error: ${e.message}</p>`;
   }
 }
 
-// SAVE PRODUCT (add or update)
 window.saveProduct = async function(){
-  let id    = document.getElementById("editProductId").value;
+  let id    = document.getElementById("editId").value;
   let title = document.getElementById("pTitle").value.trim();
   let price = parseFloat(document.getElementById("pPrice").value);
   let img1  = document.getElementById("pImg1").value.trim();
-
-  if(!title || !price || !img1){
-    showAdminToast("❌ Title, Price aur Image 1 zaroori hain!", true); return;
-  }
-
+  if(!title||!price||!img1){ toast("Title, Price aur Image 1 zaroori hain!",true); return; }
   let data = {
-    title,
-    price,
-    oldprice:    parseFloat(document.getElementById("pOldPrice").value) || 0,
-    category:    document.getElementById("pCategory").value,
-    image1:      img1,
-    image2:      document.getElementById("pImg2").value.trim() || "",
-    image3:      document.getElementById("pImg3").value.trim() || "",
-    image4:      document.getElementById("pImg4").value.trim() || "",
-    description: document.getElementById("pDesc").value.trim() || "",
-    updatedAt:   serverTimestamp()
+    title, price,
+    oldprice:    parseFloat(document.getElementById("pOldPrice").value)||0,
+    category:    document.getElementById("pCat").value,
+    image1: img1,
+    image2: document.getElementById("pImg2").value.trim()||"",
+    image3: document.getElementById("pImg3").value.trim()||"",
+    image4: document.getElementById("pImg4").value.trim()||"",
+    description: document.getElementById("pDesc").value.trim()||"",
+    updatedAt: serverTimestamp()
   };
-
-  document.getElementById("saveBtnText").innerText = "Saving...";
+  document.getElementById("saveTxt").innerText = "Saving...";
   try {
-    if(id){
-      await updateDoc(doc(db, "products", id), data);
-      showAdminToast("✅ Product update ho gaya!");
-    } else {
-      data.createdAt = serverTimestamp();
-      await addDoc(collection(db, "products"), data);
-      showAdminToast("✅ Product add ho gaya!");
-    }
+    if(id){ await updateDoc(doc(db,"products",id), data); toast("✅ Product update ho gaya!"); }
+    else   { data.createdAt=serverTimestamp(); await addDoc(collection(db,"products"),data); toast("✅ Product add ho gaya!"); }
     clearForm();
     loadProducts();
-    // Switch to products tab
-    document.querySelectorAll(".admin-tab")[0].click();
-  } catch(e){
-    showAdminToast("❌ Error: " + e.message, true);
-  }
-  document.getElementById("saveBtnText").innerText = "Save Product";
+    document.querySelectorAll(".tab")[0].click();
+  } catch(e){ toast("❌ Error: "+e.message, true); }
+  document.getElementById("saveTxt").innerText = "Save Product";
 };
 
-// EDIT
-window.editProduct = function(id){
-  let p = allProductsData[id];
+window.editProd = function(id){
+  let p = allProds[id];
   if(!p) return;
-  document.getElementById("editProductId").value = id;
-  document.getElementById("pTitle").value       = p.title || "";
-  document.getElementById("pPrice").value       = p.price || "";
-  document.getElementById("pOldPrice").value    = p.oldprice || "";
-  document.getElementById("pCategory").value    = p.category || "menswear";
-  document.getElementById("pImg1").value        = p.image1 || "";
-  document.getElementById("pImg2").value        = p.image2 || "";
-  document.getElementById("pImg3").value        = p.image3 || "";
-  document.getElementById("pImg4").value        = p.image4 || "";
-  document.getElementById("pDesc").value        = p.description || "";
-  document.getElementById("addFormTitle").innerText = "Edit Product";
-  document.getElementById("saveBtnText").innerText  = "Update Product";
-  // Switch to add tab
-  document.querySelectorAll(".admin-tab")[1].click();
-  window.scrollTo({ top:0, behavior:"smooth" });
+  document.getElementById("editId").value    = id;
+  document.getElementById("pTitle").value    = p.title||"";
+  document.getElementById("pPrice").value    = p.price||"";
+  document.getElementById("pOldPrice").value = p.oldprice||"";
+  document.getElementById("pCat").value      = p.category||"menswear";
+  document.getElementById("pImg1").value     = p.image1||"";
+  document.getElementById("pImg2").value     = p.image2||"";
+  document.getElementById("pImg3").value     = p.image3||"";
+  document.getElementById("pImg4").value     = p.image4||"";
+  document.getElementById("pDesc").value     = p.description||"";
+  document.getElementById("formTitle").innerText = "Edit Product";
+  document.getElementById("saveTxt").innerText   = "Update Product";
+  document.querySelectorAll(".tab")[1].click();
+  window.scrollTo({top:0,behavior:"smooth"});
 };
 
-// DELETE
-window.deleteProduct = async function(id, title){
-  if(!confirm(`"${title}" delete karna chahte ho? Yeh undo nahi hoga.`)) return;
-  try {
-    await deleteDoc(doc(db, "products", id));
-    showAdminToast("🗑️ Product delete ho gaya!");
-    loadProducts();
-  } catch(e){
-    showAdminToast("❌ Delete failed: " + e.message, true);
-  }
+window.delProd = async function(id, title){
+  if(!confirm(`"${title}" delete karna chahte ho?`)) return;
+  await deleteDoc(doc(db,"products",id));
+  toast("🗑️ Delete ho gaya!");
+  loadProducts();
 };
 
-// CLEAR FORM
 window.clearForm = function(){
-  ["pTitle","pPrice","pOldPrice","pImg1","pImg2","pImg3","pImg4","pDesc","editProductId"].forEach(id => {
-    document.getElementById(id).value = "";
-  });
-  document.getElementById("pCategory").value = "menswear";
-  document.getElementById("addFormTitle").innerText = "Add New Product";
-  document.getElementById("saveBtnText").innerText  = "Save Product";
+  ["editId","pTitle","pPrice","pOldPrice","pImg1","pImg2","pImg3","pImg4","pDesc"].forEach(i=>document.getElementById(i).value="");
+  document.getElementById("pCat").value = "menswear";
+  document.getElementById("formTitle").innerText = "Add Product";
+  document.getElementById("saveTxt").innerText   = "Save Product";
 };
 
-// LOAD REVIEWS
+/* ====== REVIEWS ====== */
 async function loadReviews(){
   try {
-    let snap = await getDocs(collection(db, "reviews"));
-    document.getElementById("statReviews").innerText = snap.size;
+    let snap = await getDocs(collection(db,"reviews"));
+    document.getElementById("sRevs").innerText = snap.size;
     let html = "";
     snap.forEach(d => {
       let r = d.data();
       let stars = "⭐".repeat(r.rating||5);
-      html += `
-      <div style="background:#f9f9f9;border-radius:14px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+      html += `<div style="background:#f9f9f9;border-radius:14px;padding:16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
         <div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
             <strong>${r.userName||"Anonymous"}</strong>
-            <span style="font-size:14px;">${stars}</span>
+            <span>${stars}</span>
           </div>
-          <p style="font-size:14px;color:#555;margin-bottom:4px;">${r.comment||""}</p>
+          <p style="font-size:14px;color:#555;">${r.comment||""}</p>
           <small style="color:#aaa;">${r.productTitle||""}</small>
         </div>
-        <button class="icon-btn del" onclick="deleteReview('${d.id}')" title="Delete">
-          <i class="fa-solid fa-trash"></i>
-        </button>
+        <button class="icon-btn del-btn" onclick="delReview('${d.id}')"><i class="fa-solid fa-trash"></i></button>
       </div>`;
     });
-    document.getElementById("reviewsAdminWrap").innerHTML = snap.empty
-      ? `<p style="color:#aaa;text-align:center;padding:30px;">Koi reviews nahi hain abhi.</p>`
+    document.getElementById("revWrap").innerHTML = snap.empty
+      ? `<p style="text-align:center;color:#aaa;padding:30px;">Koi reviews nahi hain.</p>`
       : html;
   } catch(e){ console.error(e); }
 }
 
-window.deleteReview = async function(id){
-  if(!confirm("Is review ko delete karna chahte ho?")) return;
-  await deleteDoc(doc(db, "reviews", id));
-  showAdminToast("🗑️ Review delete ho gaya!");
+window.delReview = async function(id){
+  if(!confirm("Review delete karna chahte ho?")) return;
+  await deleteDoc(doc(db,"reviews",id));
+  toast("🗑️ Review delete ho gaya!");
   loadReviews();
 };
 </script>
 </body>
 </html>
+
