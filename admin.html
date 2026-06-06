@@ -240,8 +240,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 // ADMIN EMAIL — apna email yahan daalo
-const ADMIN_EMAIL = "kp1496140@gmail.com";
-const ADMIN_EMAIL2 = "loothakeryt@gmail.com";
+const ADMIN_EMAILS = ["kp1496140@gmail.com", "loothakeryt@gmail.com"];
 function showAdminToast(msg, isError=false){
   let t = document.getElementById("adminToast");
   t.innerText = msg;
