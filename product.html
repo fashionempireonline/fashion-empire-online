@@ -209,8 +209,12 @@ const params    = new URLSearchParams(window.location.search);
 const productId = params.get("id");
 if(!productId) window.location.href = "index.html";
 
-const productUrl = window.location.href;
+// Always build absolute URL from current domain — never use window.location.href directly
+const BASE_URL   = window.location.origin; // e.g. https://fashionempireonline.vercel.app
+const productUrl = `${BASE_URL}/product.html?id=${productId}`;
+
 let productTitle = "", productPrice = 0, productImg = "";
+let productLoaded = false; // track if Firebase data is ready
 
 function showToast(msg){
   let t = document.getElementById("toast");
@@ -225,10 +229,14 @@ function calcDiscount(o,p){ if(!o||!p) return ""; return Math.round(((o-p)/o)*10
    SHARE FUNCTIONS
 ============================ */
 window.openSharePanel = function(){
-  document.getElementById("shareLinkText").innerText    = productUrl;
-  document.getElementById("sharePreviewTitle").innerText= productTitle;
-  document.getElementById("sharePreviewPrice").innerText= `₹${productPrice}`;
-  document.getElementById("sharePreviewImg").src        = productImg;
+  if(!productLoaded){
+    showToast("⏳ Product load ho raha hai, thoda wait karo...");
+    return;
+  }
+  document.getElementById("shareLinkText").innerText     = productUrl;
+  document.getElementById("sharePreviewTitle").innerText = productTitle;
+  document.getElementById("sharePreviewPrice").innerText = `₹${productPrice}`;
+  document.getElementById("sharePreviewImg").src         = productImg;
   document.getElementById("sharePanel").classList.add("open");
   document.getElementById("shareOverlay").classList.add("open");
 };
@@ -239,11 +247,12 @@ window.closeSharePanel = function(){
 
 window.shareWhatsApp = function(){
   let msg =
-    `👗 *Fashion Empire* — Ye product dekho!\n\n` +
-    `*${productTitle}*\n` +
-    `💰 Sirf *₹${productPrice}* mein!\n\n` +
-    `🔗 Yahan click karo:\n${productUrl}\n\n` +
-    `✨ Premium quality | Fast delivery | WhatsApp support`;
+    `👗 *Fashion Empire* pe ye product dekho!\n\n` +
+    `🏷️ *${productTitle}*\n` +
+    `💰 Price: *₹${productPrice}*\n\n` +
+    `👇 Link:\n` +
+    `${productUrl}\n\n` +
+    `✨ Premium quality guaranteed!`;
   window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
 };
 
@@ -252,7 +261,7 @@ window.shareTelegram = function(){
     `👗 Fashion Empire\n\n` +
     `${productTitle}\n` +
     `💰 ₹${productPrice}\n\n` +
-    `Premium quality product! Order karo WhatsApp pe.`;
+    `Premium quality! Order karo WhatsApp pe.`;
   window.open(`https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(msg)}`, "_blank");
 };
 
@@ -292,9 +301,10 @@ window.shareNative = function(){
       return;
     }
     let p = snap.data();
-    productTitle = p.title || "Product";
-    productPrice = p.price || 0;
-    productImg   = p.image1 || "";
+    productTitle  = p.title || "Product";
+    productPrice  = p.price || 0;
+    productImg    = p.image1 || "";
+    productLoaded = true; // ✅ ab share button kaam karega
 
     document.title = `${productTitle} | Fashion Empire`;
     document.getElementById("breadcrumbTitle").innerText = productTitle;
@@ -356,9 +366,10 @@ window.shareNative = function(){
     window.orderOnWhatsApp = function(){
       let msg =
         `Hello! Mujhe ye product order karna hai:\n\n` +
-        `*${productTitle}*\n` +
+        `🏷️ *${productTitle}*\n` +
         `💰 Price: ₹${productPrice}\n\n` +
-        `🔗 Product Link:\n${productUrl}\n\n` +
+        `👇 Product link:\n` +
+        `${productUrl}\n\n` +
         `Kripya stock availability confirm karein.`;
       window.open(`https://wa.me/919174709695?text=${encodeURIComponent(msg)}`, "_blank");
     };

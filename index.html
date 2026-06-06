@@ -273,9 +273,23 @@ window.dismissPWA = function(){
   localStorage.setItem("fe_pwa_dismissed","1");
 };
 
-// Service Worker
+// Service Worker + Push Notifications
 if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("/sw.js").catch(()=>{});
+  navigator.serviceWorker.register("/sw.js")
+    .then(reg => {
+      window._swReg = reg;
+      // Ask notification permission after 5 seconds
+      setTimeout(()=>{
+        if(Notification.permission === "default"){
+          Notification.requestPermission().then(perm => {
+            if(perm === "granted"){
+              showToast("🔔 Notifications on! Naye products ka pata chalega.");
+            }
+          });
+        }
+      }, 5000);
+    })
+    .catch(()=>{});
 }
 
 // Loader
