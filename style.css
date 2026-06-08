@@ -2595,3 +2595,215 @@ footer {
   color: #f0f0f0 !important;
 }
 
+
+/* ============================
+   HERO SLIDER
+============================ */
+.hero-slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  margin: 0 15px 20px;
+  min-height: 420px;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide.active {
+  opacity: 1;
+  position: relative;
+  min-height: 420px;
+}
+
+.slider-prev,
+.slider-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(201,168,76,0.2);
+  border: 1px solid rgba(201,168,76,0.4);
+  color: #c9a84c;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+  backdrop-filter: blur(4px);
+}
+
+.slider-prev { left: 15px; }
+.slider-next { right: 15px; }
+.slider-prev:hover,
+.slider-next:hover {
+  background: rgba(201,168,76,0.4);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.slider-dots {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(201,168,76,0.4);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.dot.active {
+  background: #c9a84c;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* ============================
+   FLASH SALE TIMER
+============================ */
+.flash-sale {
+  margin: 0 15px 20px;
+  background: linear-gradient(135deg, #1a1200, #2a1f00, #111);
+  border: 1px solid #c9a84c;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.flash-sale-inner {
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.flash-left {
+  flex: 1;
+}
+
+.flash-badge {
+  background: #c9a84c;
+  color: #111;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.flash-left h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #f0f0f0;
+  margin-bottom: 4px;
+}
+
+.flash-left p {
+  font-size: 13px;
+  color: #888;
+}
+
+.flash-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timer-box {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 10px 14px;
+  text-align: center;
+  min-width: 60px;
+}
+
+.timer-box span {
+  font-size: 26px;
+  font-weight: 800;
+  color: #c9a84c;
+  display: block;
+  line-height: 1;
+}
+
+.timer-box small {
+  font-size: 10px;
+  color: #666;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.timer-sep {
+  font-size: 24px;
+  font-weight: 800;
+  color: #c9a84c;
+  margin-bottom: 14px;
+}
+
+.flash-btn {
+  padding: 13px 24px;
+  background: linear-gradient(135deg, #c9a84c, #f0d080);
+  color: #111;
+  border: none;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  transition: 0.3s;
+  white-space: nowrap;
+}
+
+.flash-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(201,168,76,0.4);
+}
+
+@media (max-width: 480px) {
+  .flash-sale-inner { flex-direction: column; text-align: center; }
+  .flash-timer { justify-content: center; }
+  .timer-box { min-width: 52px; padding: 8px 10px; }
+  .timer-box span { font-size: 22px; }
+}
+
+/* ============================
+   FEATURED SECTION
+============================ */
+.featured-section {
+  padding: 10px 0 20px;
+}
+
+.featured-section .section-title::before {
+  content: "";
+}
+
+/* ============================
+   ADMIN CHARTS responsive
+============================ */
+@media (max-width: 600px) {
+  #sec-charts .card > div:first-of-type {
+    grid-template-columns: 1fr !important;
+  }
+}
+

@@ -131,6 +131,7 @@ async function loadFirebaseProducts(){
     });
 
     loadAllRatings();
+    loadFeatured();
     loadRecommended();
   } catch(err){
     console.error(err);
@@ -177,6 +178,42 @@ async function loadAllRatings(){
 /* ============================
    RECOMMENDED
 ============================ */
+/* ============================
+   FEATURED PRODUCTS
+============================ */
+function loadFeatured(){
+  let section = document.getElementById("featuredSection");
+  if(!section) return;
+
+  let ids = Object.keys(allProducts);
+  if(ids.length === 0){ section.style.display="none"; return; }
+
+  // Pick first 4 products with discount as featured
+  let featured = ids.filter(id => {
+    let p = allProducts[id];
+    return p.oldprice && p.price && p.oldprice > p.price;
+  }).slice(0, 4);
+
+  // If not enough discounted, fill with random
+  if(featured.length < 4){
+    ids.forEach(id => {
+      if(!featured.includes(id)) featured.push(id);
+    });
+    featured = featured.slice(0, 4);
+  }
+
+  if(featured.length === 0){ section.style.display="none"; return; }
+
+  let wrap = document.getElementById("featuredGrid");
+  if(!wrap) return;
+  wrap.innerHTML = "";
+  featured.forEach(id => {
+    let card = buildCard(id, allProducts[id]);
+    wrap.appendChild(card);
+  });
+  section.style.display = "block";
+}
+
 function loadRecommended(){
   let section = document.getElementById("recommendedSection");
   if(!section) return;
