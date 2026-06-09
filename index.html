@@ -5,6 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fashion Empire Online | Trendy Fashion Store</title>
 <meta name="description" content="Buy trendy fashion clothes online at Fashion Empire." />
+
+<!-- OG META TAGS — WhatsApp, Instagram, Telegram, Facebook preview ke liye -->
+<meta property="og:title"        content="Fashion Empire | Premium Fashion Store" />
+<meta property="og:description"  content="Trendy clothes, shoes, bags &amp; accessories. Premium reseller quality at best prices. Order on WhatsApp!" />
+<meta property="og:image"        content="https://fashionempireonline.vercel.app/images/icon-512.png" />
+<meta property="og:image:width"  content="512" />
+<meta property="og:image:height" content="512" />
+<meta property="og:url"          content="https://fashionempireonline.vercel.app/" />
+<meta property="og:type"         content="website" />
+<meta property="og:site_name"    content="Fashion Empire" />
+<meta property="og:locale"       content="en_IN" />
+<!-- Twitter Card -->
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:title"       content="Fashion Empire | Premium Fashion Store" />
+<meta name="twitter:description" content="Trendy clothes, shoes, bags &amp; accessories at best prices." />
+<meta name="twitter:image"       content="https://fashionempireonline.vercel.app/images/icon-512.png" />
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ff416c">
@@ -69,54 +85,17 @@
   </div>
 </header>
 
-<!-- HERO SLIDER -->
-<section class="hero-slider" id="heroSlider">
-  <!-- Slide 1 -->
-  <div class="slide active" style="background:linear-gradient(135deg,#0a0a0a 0%,#1a1a1a 50%,#0a0a0a 100%);">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <div class="hero-badge">👑 LUXURY FASHION STORE</div>
-      <h1>Upgrade Your Fashion Style</h1>
-      <p>Premium clothes, shoes, bags & accessories.</p>
-      <div class="hero-buttons">
-        <button class="shop-btn" onclick="scrollToProducts()">Shop Collection</button>
-        <button class="explore-btn" onclick="scrollToProducts()">Explore Trends</button>
-      </div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🔥 TRENDING FASHION STORE</div>
+    <h1>Upgrade Your Fashion Style</h1>
+    <p>Luxury fashion collection for modern lifestyle.<br>Premium clothes, shoes, bags & accessories.</p>
+    <div class="hero-buttons">
+      <button class="shop-btn" onclick="scrollToProducts()">Shop Collection</button>
+      <button class="explore-btn" onclick="scrollToProducts()">Explore Trends</button>
     </div>
-  </div>
-  <!-- Slide 2 -->
-  <div class="slide" style="background:linear-gradient(135deg,#1a1200 0%,#2a1f00 50%,#111 100%);">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <div class="hero-badge">🔥 NEW ARRIVALS</div>
-      <h1>New Collection Is Here</h1>
-      <p>Latest trends in menswear & womenwear.</p>
-      <div class="hero-buttons">
-        <button class="shop-btn" onclick="filterCategory('menswear',null);scrollToProducts()">Men's Collection</button>
-        <button class="explore-btn" onclick="filterCategory('womenwear',null);scrollToProducts()">Women's Collection</button>
-      </div>
-    </div>
-  </div>
-  <!-- Slide 3 -->
-  <div class="slide" style="background:linear-gradient(135deg,#0a0a1a 0%,#1a1a2a 50%,#0a0a0a 100%);">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <div class="hero-badge">💎 PREMIUM QUALITY</div>
-      <h1>Best Deals on Accessories</h1>
-      <p>Watches, bags, sunglasses & more.</p>
-      <div class="hero-buttons">
-        <button class="shop-btn" onclick="filterCategory('watches',null);scrollToProducts()">Shop Watches</button>
-        <button class="explore-btn" onclick="filterCategory('bags',null);scrollToProducts()">Shop Bags</button>
-      </div>
-    </div>
-  </div>
-  <!-- Slider Controls -->
-  <button class="slider-prev" onclick="changeSlide(-1)">&#8249;</button>
-  <button class="slider-next" onclick="changeSlide(1)">&#8250;</button>
-  <div class="slider-dots" id="sliderDots">
-    <span class="dot active" onclick="goToSlide(0)"></span>
-    <span class="dot" onclick="goToSlide(1)"></span>
-    <span class="dot" onclick="goToSlide(2)"></span>
   </div>
 </section>
 
@@ -125,25 +104,6 @@
   <div class="feature-box"><i class="fa-solid fa-truck-fast"></i><h3>Fast Delivery</h3><p>Quick WhatsApp support</p></div>
   <div class="feature-box"><i class="fa-solid fa-shield-heart"></i><h3>Trusted Products</h3><p>Premium reseller quality</p></div>
   <div class="feature-box"><i class="fa-solid fa-headset"></i><h3>24/7 Support</h3><p>Direct WhatsApp assistance</p></div>
-</section>
-
-<!-- FLASH SALE TIMER -->
-<section class="flash-sale" id="flashSale">
-  <div class="flash-sale-inner">
-    <div class="flash-left">
-      <span class="flash-badge">⚡ FLASH SALE</span>
-      <h2>Limited Time Offer!</h2>
-      <p>Jaldi karo — offer khatam hone wala hai!</p>
-    </div>
-    <div class="flash-timer" id="flashTimer">
-      <div class="timer-box"><span id="timerH">00</span><small>Hours</small></div>
-      <div class="timer-sep">:</div>
-      <div class="timer-box"><span id="timerM">00</span><small>Mins</small></div>
-      <div class="timer-sep">:</div>
-      <div class="timer-box"><span id="timerS">00</span><small>Secs</small></div>
-    </div>
-    <button class="flash-btn" onclick="scrollToProducts()">Shop Now 🔥</button>
-  </div>
 </section>
 
 <!-- CATEGORY -->
@@ -223,15 +183,6 @@
 
 <!-- PRODUCTS -->
 <section class="products" id="products"></section>
-
-<!-- FEATURED PRODUCTS -->
-<section class="featured-section" id="featuredSection" style="display:none;">
-  <div class="section-header">
-    <h2 class="section-title">🌟 Featured Products</h2>
-    <p>Hamare best selected products</p>
-  </div>
-  <div class="products" id="featuredGrid"></div>
-</section>
 
 <!-- RECOMMENDED SECTION -->
 <section class="recommended-section" id="recommendedSection" style="display:none;">
@@ -412,50 +363,6 @@ window.openFilterPanel = function(){
   document.getElementById("filterPanel").classList.add("open");
   document.getElementById("filterOverlay").classList.add("open");
 };
-</script>
-
-<script>
-/* ====== HERO SLIDER ====== */
-let currentSlide = 0;
-const slides = document.querySelectorAll(".slide");
-const dots   = document.querySelectorAll(".dot");
-
-function goToSlide(n){
-  slides[currentSlide].classList.remove("active");
-  dots[currentSlide].classList.remove("active");
-  currentSlide = (n + slides.length) % slides.length;
-  slides[currentSlide].classList.add("active");
-  dots[currentSlide].classList.add("active");
-}
-
-window.changeSlide = function(dir){ goToSlide(currentSlide + dir); };
-window.goToSlide   = goToSlide;
-
-// Auto slide every 4 seconds
-setInterval(()=> goToSlide(currentSlide + 1), 4000);
-
-/* ====== FLASH SALE TIMER ====== */
-function startFlashTimer(){
-  // Set sale end: next midnight
-  let now     = new Date();
-  let end     = new Date();
-  end.setHours(23, 59, 59, 0);
-  if(now > end) end.setDate(end.getDate() + 1);
-
-  function update(){
-    let diff = end - new Date();
-    if(diff <= 0){ diff = 0; }
-    let h = Math.floor(diff / 3600000);
-    let m = Math.floor((diff % 3600000) / 60000);
-    let s = Math.floor((diff % 60000) / 1000);
-    document.getElementById("timerH").innerText = String(h).padStart(2,"0");
-    document.getElementById("timerM").innerText = String(m).padStart(2,"0");
-    document.getElementById("timerS").innerText = String(s).padStart(2,"0");
-  }
-  update();
-  setInterval(update, 1000);
-}
-startFlashTimer();
 </script>
 
 <script type="module" src="script.js"></script>

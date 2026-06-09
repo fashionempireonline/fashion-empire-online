@@ -7,6 +7,18 @@
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#ff416c">
+<!-- OG META TAGS — dynamically updated via JS after product loads -->
+<meta property="og:title"        content="Fashion Empire | Premium Product" id="ogTitle" />
+<meta property="og:description"  content="Premium quality fashion from Fashion Empire. Order on WhatsApp!" id="ogDesc" />
+<meta property="og:image"        content="https://fashionempireonline.vercel.app/images/icon-512.png" id="ogImage" />
+<meta property="og:image:width"  content="600" />
+<meta property="og:image:height" content="600" />
+<meta property="og:url"          content="" id="ogUrl" />
+<meta property="og:type"         content="product" />
+<meta property="og:site_name"    content="Fashion Empire" />
+<meta name="twitter:card"        content="summary_large_image" />
+<meta name="twitter:title"       content="Fashion Empire | Premium Product" id="twTitle" />
+<meta name="twitter:image"       content="https://fashionempireonline.vercel.app/images/icon-512.png" id="twImage" />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
@@ -306,8 +318,18 @@ window.shareNative = function(){
     productImg    = p.image1 || "";
     productLoaded = true; // ✅ ab share button kaam karega
 
+    // Dynamic title + OG meta update (SEO + WhatsApp/Telegram share preview)
     document.title = `${productTitle} | Fashion Empire`;
     document.getElementById("breadcrumbTitle").innerText = productTitle;
+
+    const ogDesc = `${productTitle} — sirf ₹${productPrice} mein. Premium quality, fast delivery. Fashion Empire pe order karo!`;
+    const setMeta = (id, val) => { let el = document.getElementById(id); if(el) el.setAttribute("content", val); };
+    setMeta("ogTitle",  `${productTitle} | Fashion Empire`);
+    setMeta("ogDesc",   ogDesc);
+    setMeta("ogImage",  productImg);
+    setMeta("ogUrl",    productUrl);
+    setMeta("twTitle",  `${productTitle} | Fashion Empire`);
+    setMeta("twImage",  productImg);
 
     let images   = [p.image1,p.image2,p.image3,p.image4,p.image5].filter(Boolean);
     let discount = calcDiscount(p.oldprice, p.price);
