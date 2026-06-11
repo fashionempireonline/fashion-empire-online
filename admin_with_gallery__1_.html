@@ -8,6 +8,32 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
+
+/* ORDER DASHBOARD STYLES */
+.order-card{background:#f9f9f9;border-radius:16px;padding:18px;margin-bottom:14px;border-left:4px solid #eee;transition:0.2s;}
+.order-card:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(0,0,0,0.08);}
+.order-card.pending   {border-left-color:#f5a623;}
+.order-card.confirmed {border-left-color:#0066cc;}
+.order-card.shipped   {border-left-color:#8B5CF6;}
+.order-card.delivered {border-left-color:#00a854;}
+.order-card.cancelled {border-left-color:#e00;}
+.order-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;}
+.order-prod-img{width:60px;height:60px;object-fit:cover;border-radius:12px;flex-shrink:0;}
+.order-info h4{font-size:14px;font-weight:700;margin-bottom:3px;}
+.order-info p{font-size:13px;color:#888;margin-bottom:2px;}
+.order-price{font-size:15px;font-weight:700;color:#ff416c;}
+.order-customer{background:white;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;line-height:1.8;color:#555;}
+.order-customer strong{color:#111;}
+.order-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.status-select{padding:8px 14px;border:2px solid #eee;border-radius:10px;font-family:Poppins,sans-serif;font-size:13px;font-weight:600;cursor:pointer;outline:none;transition:0.2s;}
+.status-select:focus{border-color:#ff416c;}
+.order-wa-btn{padding:8px 16px;background:linear-gradient(135deg,#25D366,#128C7E);color:white;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif;display:flex;align-items:center;gap:6px;}
+.order-del-btn{padding:8px 14px;background:#fff0f0;color:#e00;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:Poppins,sans-serif;}
+.order-id-badge{font-size:11px;color:#aaa;font-family:monospace;margin-top:4px;}
+.stat-mini{background:white;border-radius:14px;padding:14px 16px;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,0.06);}
+.stat-mini h3{font-size:22px;font-weight:800;margin-bottom:2px;}
+.stat-mini p{font-size:12px;color:#888;}
+
 body { background:#f0f2f5; padding:20px; padding-bottom:20px !important; padding-top:20px !important; }
 .admin-wrap { max-width:1100px; margin:auto; }
 .admin-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
@@ -265,6 +291,7 @@ tr:hover td { background: #1a1a1a !important; }
   <div class="admin-tabs">
     <button class="admin-tab active" onclick="switchTab('products')"><i class="fa-solid fa-box"></i> Products</button>
     <button class="admin-tab" onclick="switchTab('add')"><i class="fa-solid fa-plus"></i> Add Product</button>
+    <button class="admin-tab" onclick="switchTab('orders')"><i class="fa-solid fa-truck-fast"></i> Orders <span id="pendingBadge" style="display:none;background:#ff416c;color:white;font-size:11px;padding:2px 7px;border-radius:20px;margin-left:4px;"></span></button>
     <button class="admin-tab" onclick="switchTab('reviews')"><i class="fa-solid fa-star"></i> Reviews</button>
     <button class="admin-tab" onclick="switchTab('gallery')"><i class="fa-solid fa-images"></i> Gallery</button>
   </div>
@@ -278,6 +305,32 @@ tr:hover td { background: #1a1a1a !important; }
       </div>
     </div>
   </div>
+
+  <!-- ORDERS DASHBOARD -->
+  <div id="tab-orders" class="admin-section">
+    <div class="admin-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+        <h3 style="margin:0;"><i class="fa-solid fa-truck-fast"></i> COD Orders</h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <select id="orderStatusFilter" onchange="filterOrders()" style="padding:9px 14px;border:2px solid #eee;border-radius:12px;font-family:Poppins,sans-serif;font-size:13px;outline:none;cursor:pointer;">
+            <option value="all">Sab Orders</option>
+            <option value="pending">🟡 Pending</option>
+            <option value="confirmed">🟢 Confirmed</option>
+            <option value="shipped">🔵 Shipped</option>
+            <option value="delivered">✅ Delivered</option>
+            <option value="cancelled">❌ Cancelled</option>
+          </select>
+        </div>
+      </div>
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;" id="orderStatsRow"></div>
+      <!-- Orders list -->
+      <div id="ordersListWrap">
+        <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Orders load ho rahi hain...</div>
+      </div>
+    </div>
+  </div>
+
 
   <!-- ADD PRODUCT -->
   <div id="tab-add" class="admin-section">
@@ -481,25 +534,16 @@ function showAdminToast(msg, isError=false){
   setTimeout(()=> t.classList.remove("show"), 3000);
 }
 
-// AUTH CHECK — sirf ADMIN_EMAILS allowed hain
-onAuthStateChanged(auth, async user => {
-  if(user && ADMIN_EMAILS.includes(user.email)){
-    // ✅ Verified admin
+// AUTH CHECK
+onAuthStateChanged(auth, user => {
+  if(user){
     document.getElementById("adminLoginGate").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
     loadProducts();
     loadReviews();
     loadGallery();
-  } else if(user && !ADMIN_EMAILS.includes(user.email)){
-    // ⛔ Logged in but NOT admin — force logout
-    await signOut(auth);
-    document.getElementById("adminLoginGate").style.display = "flex";
-    document.getElementById("adminPanel").style.display = "none";
-    let err = document.getElementById("adminLoginErr");
-    err.innerText = "⛔ Aapke paas admin access nahi hai.";
-    err.style.display = "block";
+    loadOrders();
   } else {
-    // Not logged in
     document.getElementById("adminLoginGate").style.display = "flex";
     document.getElementById("adminPanel").style.display = "none";
   }
@@ -509,35 +553,13 @@ window.adminLogin = async function(){
   let email = document.getElementById("adminEmail").value.trim();
   let pass  = document.getElementById("adminPassword").value;
   let err   = document.getElementById("adminLoginErr");
-  let btn   = document.querySelector("#adminLoginGate .admin-btn");
   err.style.display = "none";
-
-  if(!email || !pass){
-    err.innerText = "Email aur password dono daalo.";
-    err.style.display = "block"; return;
-  }
-
-  // ✅ Client-side pre-check before Firebase call
-  if(!ADMIN_EMAILS.includes(email)){
-    err.innerText = "⛔ Is email ko admin access nahi hai.";
-    err.style.display = "block"; return;
-  }
-
-  if(btn){ btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Logging in...`; btn.disabled = true; }
-
   try {
-    await signInWithEmailAndPassword(auth, email, pass);
-    // onAuthStateChanged will handle the rest
+    let cred = await signInWithEmailAndPassword(auth, email, pass);
+
   } catch(e){
-    let msgs = {
-      "auth/wrong-password":    "Password galat hai.",
-      "auth/user-not-found":    "Email registered nahi hai.",
-      "auth/invalid-credential":"Email ya password galat hai.",
-      "auth/too-many-requests": "Bahut zyada attempts. Thodi der baad try karo."
-    };
-    err.innerText = msgs[e.code] || "Login failed. Try again.";
+    err.innerText = "Email ya password galat hai.";
     err.style.display = "block";
-    if(btn){ btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Login`; btn.disabled = false; }
   }
 };
 
@@ -970,6 +992,170 @@ window.sendNotification = async function(){
   }
   btn.innerText = "Notification Bhejo";
 };
+
+/* ============================
+   ORDERS DASHBOARD
+============================ */
+let allOrders = [];
+
+async function loadOrders(){
+  try {
+    let snap = await getDocs(collection(db, "orders"));
+    allOrders = [];
+    snap.forEach(d => allOrders.push({ id: d.id, ...d.data() }));
+    allOrders.sort((a,b)=> (b.orderTime?.seconds||0) - (a.orderTime?.seconds||0));
+    renderOrders(allOrders);
+    updateOrderStats(allOrders);
+  } catch(e){
+    document.getElementById("ordersListWrap").innerHTML = `<p style="color:#e00;padding:20px;">Orders load nahi hui: ${e.message}</p>`;
+  }
+}
+
+function updateOrderStats(orders){
+  let counts = { pending:0, confirmed:0, shipped:0, delivered:0, cancelled:0 };
+  orders.forEach(o => { if(counts[o.status]!==undefined) counts[o.status]++; });
+  let statsRow = document.getElementById("orderStatsRow");
+  if(!statsRow) return;
+  statsRow.innerHTML = `
+    <div class="stat-mini"><h3 style="color:#111;">${orders.length}</h3><p>Total Orders</p></div>
+    <div class="stat-mini"><h3 style="color:#f5a623;">${counts.pending}</h3><p>Pending</p></div>
+    <div class="stat-mini"><h3 style="color:#0066cc;">${counts.confirmed}</h3><p>Confirmed</p></div>
+    <div class="stat-mini"><h3 style="color:#8B5CF6;">${counts.shipped}</h3><p>Shipped</p></div>
+    <div class="stat-mini"><h3 style="color:#00a854;">${counts.delivered}</h3><p>Delivered</p></div>`;
+
+  // Pending badge on tab
+  let badge = document.getElementById("pendingBadge");
+  if(badge){
+    if(counts.pending > 0){
+      badge.textContent = counts.pending;
+      badge.style.display = "inline-block";
+    } else {
+      badge.style.display = "none";
+    }
+  }
+}
+
+function renderOrders(orders){
+  let wrap = document.getElementById("ordersListWrap");
+  if(!wrap) return;
+  if(orders.length === 0){
+    wrap.innerHTML = `<p style="text-align:center;color:#aaa;padding:30px;">Koi orders nahi hain abhi.</p>`;
+    return;
+  }
+
+  wrap.innerHTML = "";
+  orders.forEach(order => {
+    let statusColors = { pending:"#f5a623", confirmed:"#0066cc", shipped:"#8B5CF6", delivered:"#00a854", cancelled:"#e00" };
+    let statusEmoji  = { pending:"🟡", confirmed:"🟢", shipped:"🔵", delivered:"✅", cancelled:"❌" };
+    let dateStr = order.orderTime
+      ? new Date(order.orderTime.seconds*1000).toLocaleString("en-IN",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})
+      : "—";
+
+    let card = document.createElement("div");
+    card.className = `order-card ${order.status||"pending"}`;
+    card.id = `order-${order.id}`;
+
+    let waMsg = encodeURIComponent(
+      `Hello ${order.naam}! 👋
+
+Fashion Empire yahan se baat kar raha hoon.
+
+Aapka order:
+` +
+      `📦 ${order.productTitle}
+💰 ₹${order.productPrice}
+` +
+      (order.selectedSize && order.selectedSize!="N/A" ? `📐 Size: ${order.selectedSize}
+` : "") +
+      `
+Status: ${(order.status||"pending").toUpperCase()}
+
+Koi sawaal ho toh batao!`
+    );
+
+    card.innerHTML = `
+      <div class="order-top">
+        <img class="order-prod-img" src="${order.productImage||''}" alt="${order.productTitle||''}">
+        <div class="order-info" style="flex:1;">
+          <h4>${order.productTitle||'—'}</h4>
+          <p>₹${order.productPrice||0} ${order.selectedSize && order.selectedSize!="N/A" ? `· Size: <strong>${order.selectedSize}</strong>` : ""}</p>
+          <p class="order-price">💰 ₹${order.productPrice||0}</p>
+          <div class="order-id-badge">ID: ${order.id.slice(0,8).toUpperCase()} · ${dateStr}</div>
+        </div>
+        <div>
+          <span style="background:${statusColors[order.status||'pending']}20;color:${statusColors[order.status||'pending']};padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;">
+            ${statusEmoji[order.status||'pending']} ${(order.status||'pending').toUpperCase()}
+          </span>
+        </div>
+      </div>
+      <div class="order-customer">
+        <strong>${order.naam||'—'}</strong> · 📞 ${order.phone||'—'} ${order.altPhone ? `/ ${order.altPhone}` : ""}<br>
+        📍 ${order.address||'—'}, ${order.city||'—'}, ${order.state||'—'} — ${order.pincode||'—'}
+        ${order.notes ? `<br>📝 <em>${order.notes}</em>` : ""}
+      </div>
+      <div class="order-actions">
+        <select class="status-select" onchange="updateOrderStatus('${order.id}', this.value)">
+          <option value="pending"   ${order.status==='pending'   ?'selected':''}>🟡 Pending</option>
+          <option value="confirmed" ${order.status==='confirmed' ?'selected':''}>🟢 Confirmed</option>
+          <option value="shipped"   ${order.status==='shipped'   ?'selected':''}>🔵 Shipped</option>
+          <option value="delivered" ${order.status==='delivered' ?'selected':''}>✅ Delivered</option>
+          <option value="cancelled" ${order.status==='cancelled' ?'selected':''}>❌ Cancelled</option>
+        </select>
+        <button class="order-wa-btn" onclick="window.open('https://wa.me/91${order.phone||''}?text=${waMsg}','_blank')">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp
+        </button>
+        <button class="order-del-btn" onclick="deleteOrder('${order.id}')">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>`;
+
+    wrap.appendChild(card);
+  });
+}
+
+window.filterOrders = function(){
+  let val = document.getElementById("orderStatusFilter").value;
+  let filtered = val === "all" ? allOrders : allOrders.filter(o => o.status === val);
+  renderOrders(filtered);
+};
+
+window.updateOrderStatus = async function(orderId, newStatus){
+  try {
+    await updateDoc(doc(db, "orders", orderId), { status: newStatus, updatedAt: serverTimestamp() });
+    let order = allOrders.find(o => o.id === orderId);
+    if(order) order.status = newStatus;
+    let card = document.getElementById(`order-${orderId}`);
+    if(card){
+      card.className = `order-card ${newStatus}`;
+    }
+    updateOrderStats(allOrders);
+    showAdminToast(`✅ Order status: ${newStatus.toUpperCase()}`);
+  } catch(e){
+    showAdminToast("❌ Update failed: " + e.message, true);
+  }
+};
+
+window.deleteOrder = async function(orderId){
+  if(!confirm("Ye order delete karna chahte ho?")) return;
+  try {
+    await deleteDoc(doc(db, "orders", orderId));
+    allOrders = allOrders.filter(o => o.id !== orderId);
+    renderOrders(allOrders);
+    updateOrderStats(allOrders);
+    showAdminToast("🗑️ Order delete ho gaya!");
+  } catch(e){
+    showAdminToast("❌ Delete failed: " + e.message, true);
+  }
+};
+
+// Switch tab ko override karke orders load karo
+const _origSwitch = window.switchTab;
+window.switchTab = function(tab){
+  _origSwitch(tab);
+  if(tab === "orders") loadOrders();
+  if(tab === "gallery") loadGallery();
+};
+
 </script>
 </body>
 </html>
